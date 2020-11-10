@@ -1,5 +1,5 @@
 {
     "files.eol": "\n",
-    "ev3devBrowser.download.exclude": "{**/.*,LICENSE,README.md,Projeto.pdf,ligacoes.txt}",
+    "ev3devBrowser.download.exclude": "{**/.*,LICENSE,README.md,Projeto.pdf,ligacoes.txt,Código - Robot (Enviado para Professor)/**}",
     "terminal.integrated.shell.windows": "cmd.exe"
 }
