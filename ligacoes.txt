@@ -1,1 +1,6 @@
-Color Sensor: 
+Color Sensor: INPUT_3
+Touch Sensor: INPUT_1
+Ultrasonic Sensor: INPUT_4
+Right motor: OUTPUT_C
+Left motor: OUTPUT_B
+Rotating: OUTPUT_D
