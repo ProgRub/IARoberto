@@ -2,7 +2,8 @@
 
 from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
 from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
-from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor,GyroSensor
+from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
+from movement import *
 import os
 import time
 os.system('setfont Lat15-TerminusBold14')
@@ -21,38 +22,78 @@ PAREDE_SUL = 11
 PAREDE_ESTE = 12
 PAREDE_OESTE = 13
 OVELHA = 15
-ROTACAO = 178
-VELOCIDADE=70
+indexRobot=0
 
 tabuleiro = []
+for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
+    tabuleiro.append(0)
 
-tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
-tank_drive.on_for_degrees(SpeedPercent(15), SpeedPercent(-15), ROTACAO)
-time.sleep(2)
-tank_drive.on_for_degrees(SpeedPercent(15), SpeedPercent(-15), ROTACAO)
-time.sleep(2)
-tank_drive.on_for_degrees(SpeedPercent(15), SpeedPercent(-15), ROTACAO)
-time.sleep(2)
-tank_drive.on_for_degrees(SpeedPercent(15), SpeedPercent(-15), ROTACAO)
+for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
+    if (index % TAMANHO_TABULEIRO == 0):
+        tabuleiro[index]+=PAREDE_OESTE
+    if (index >= 30):
+        tabuleiro[index] += PAREDE_NORTE
+    if ((index - 5) % TAMANHO_TABULEIRO == 0):
+        tabuleiro[index] += PAREDE_ESTE
+    if (index < 6):
+        tabuleiro[index]+=PAREDE_SUL
+    else:
+        tabuleiro.append(0)
+
+# forwardOneSquare()
+# indexRobot += CIMA
+# print(indexRobot)
+# backOneSquare()
+# indexRobot+=BAIXO
+# print(indexRobot)
+# turnLeft()
+# indexRobot+=ESQUERDA
+# print(indexRobot)
+# turnRight()
+# indexRobot+=DIREITA
+# print(indexRobot)
+
+for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
+    print(str(tabuleiro[index]) + ", ")
+
+while True:
+    time.sleep(5)
+# tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
+# tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 1.45*5)
+# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 182)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 180)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), ROTACAO)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), ROTACAO)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
+# time.sleep(2)
+# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
 
 # tank_drive.gyro = GyroSensor()
 # tank_drive.gyro.calibrate()
 # time.sleep(10)
-# tank_drive.turn_right(SpeedPercent(15), 90)
+# tank_drive.turn_right(SpeedPercent(VELOCIDADE), 90)
 # time.sleep(2)
-# tank_drive.turn_right(SpeedPercent(15), 90)
+# tank_drive.turn_right(SpeedPercent(VELOCIDADE), 90)
 # time.sleep(2)
-# tank_drive.turn_right(SpeedPercent(15), 90)
+# tank_drive.turn_right(SpeedPercent(VELOCIDADE), 90)
 # time.sleep(2)
-# tank_drive.turn_right(SpeedPercent(15),90)
+# tank_drive.turn_right(SpeedPercent(VELOCIDADE),90)
 # time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(15),90)
+# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
 # time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(15),90)
+# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
 # time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(15),90)
+# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
 # time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(15),90)
+# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
 
 # tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 # # tank_drive.on_for_degrees(SpeedPercent(50), SpeedPercent(75), 90)
@@ -80,9 +121,21 @@ tank_drive.on_for_degrees(SpeedPercent(15), SpeedPercent(-15), ROTACAO)
 # time.sleep(2)
 # tank_drive.on_for_rotations(SpeedPercent(25), SpeedPercent(-25),ROTACAO)
 
-sonic = UltrasonicSensor()
-sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
-print(sonic.distance_centimetres())
+
+
+# """ ULTRASONIC"""
+# sonic = UltrasonicSensor()
+# sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
+# units = sonic.units
+# while True:
+#     print(str(sonic.value()//10))
+
+
+"""COLOR"""
+# colorSensor = ColorSensor()
+# colorSensor.mode = 'COL-COLOR'
+# while True:
+#     print(colorSensor.value())
 
 # from ev3dev.ev3 import *
 # import os
