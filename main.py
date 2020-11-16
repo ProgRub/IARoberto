@@ -1,44 +1,66 @@
 #!/usr/bin/env python3
 
-from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
-from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
-from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
-from movement import *
-import os
-import time
-os.system('setfont Lat15-TerminusBold14')
+# from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
+# from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
+# from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
+# from movement import *
+# import os
+# import time
+# os.system('setfont Lat15-TerminusBold14')
 
 TAMANHO_TABULEIRO = 6
 DIREITA = 1
 ESQUERDA = -1
 CIMA = TAMANHO_TABULEIRO
 BAIXO = -TAMANHO_TABULEIRO
-ROBOT_NORTE = -10
-ROBOT_ESTE = -9
-ROBOT_OESTE = -8
-ROBOT_SUL = -7
-PAREDE_NORTE = 10
-PAREDE_SUL = 11
-PAREDE_ESTE = 12
-PAREDE_OESTE = 13
-OVELHA = 15
+NORTE="N"
+ESTE="E"
+OESTE="W"
+SUL="S"
+OVELHA = "O"
+ROBOT_ORIENTACOES = NORTE + ESTE + OESTE + SUL
+indexRobotOrientacoes=0
 indexRobot=0
 
 tabuleiro = []
 for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
-    tabuleiro.append(0)
+    tabuleiro.append("")
 
 for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
     if (index % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index]+=PAREDE_OESTE
+        tabuleiro[index]+=OESTE #Parede a oeste
     if (index >= 30):
-        tabuleiro[index] += PAREDE_NORTE
+        tabuleiro[index] += NORTE #Parede a norte
     if ((index - 5) % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index] += PAREDE_ESTE
+        tabuleiro[index] += ESTE #Parede a este
     if (index < 6):
-        tabuleiro[index]+=PAREDE_SUL
-    else:
-        tabuleiro.append(0)
+        tabuleiro[index]+=SUL #Parede a sul
+
+def foundWall():
+    if indexRobotOrientacoes == 0: #Virado para norte
+        tabuleiro[index] += NORTE  #Parede a norte
+        try:
+            tabuleiro[index + CIMA] += SUL  #A célula acima da atual do robot tem uma parede a sul
+        except:
+            pass
+    elif indexRobotOrientacoes == 1: #Virado para este
+        tabuleiro[index] += ESTE  #Parede a este
+        if (index+DIREITA)%TAMANHO_TABULEIRO!=0:
+            tabuleiro[
+                index +
+                DIREITA] += OESTE  #A célula à direita do robot tem uma parede a oeste
+    elif indexRobotOrientacoes == 2: #Virado para oeste
+        tabuleiro[index] += OESTE  #Parede a oeste
+        if index % TAMANHO_TABULEIRO != 0:
+            tabuleiro[
+                index +
+                ESQUERDA] += ESTE  #A célula à esquerda do robot tem uma parede a este
+    else: #indexRobotOrientacoes==3 // Virado para sul
+        tabuleiro[index] += SUL  #Parede a sul
+        try:
+            tabuleiro[index + BAIXO] += NORTE  #A célula abaixo da atual do robot tem uma parede a norte
+        except:
+            pass
 
 # forwardOneSquare()
 # indexRobot += CIMA
@@ -53,11 +75,10 @@ for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
 # indexRobot+=DIREITA
 # print(indexRobot)
 
-for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
-    print(str(tabuleiro[index]) + ", ")
+print(", ".join(tabuleiro))
 
-while True:
-    time.sleep(5)
+# while True:
+#     time.sleep(5)
 # tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 # tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 1.45*5)
 # tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 182)
