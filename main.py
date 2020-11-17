@@ -39,28 +39,28 @@ for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
 def foundWall():
     if indexRobotOrientacoes == 0: #Virado para norte
         tabuleiro[index] += NORTE  #Parede a norte
-        try:
-            tabuleiro[index + CIMA] += SUL  #A célula acima da atual do robot tem uma parede a sul
-        except:
-            pass
+        # try:
+        #     tabuleiro[index + CIMA] += SUL  #A célula acima da atual do robot tem uma parede a sul
+        #except:
+        #    pass
     elif indexRobotOrientacoes == 1: #Virado para este
         tabuleiro[index] += ESTE  #Parede a este
-        if (index+DIREITA)%TAMANHO_TABULEIRO!=0:
-            tabuleiro[
-                index +
-                DIREITA] += OESTE  #A célula à direita do robot tem uma parede a oeste
+        # if (index+DIREITA)%TAMANHO_TABULEIRO!=0:
+        #     tabuleiro[
+        #         index +
+        #         DIREITA] += OESTE  #A célula à direita do robot tem uma parede a oeste
     elif indexRobotOrientacoes == 2: #Virado para oeste
         tabuleiro[index] += OESTE  #Parede a oeste
-        if index % TAMANHO_TABULEIRO != 0:
-            tabuleiro[
-                index +
-                ESQUERDA] += ESTE  #A célula à esquerda do robot tem uma parede a este
+        # if index % TAMANHO_TABULEIRO != 0:
+        #     tabuleiro[
+        #         index +
+        #         ESQUERDA] += ESTE  #A célula à esquerda do robot tem uma parede a este
     else: #indexRobotOrientacoes==3 // Virado para sul
         tabuleiro[index] += SUL  #Parede a sul
-        try:
-            tabuleiro[index + BAIXO] += NORTE  #A célula abaixo da atual do robot tem uma parede a norte
-        except:
-            pass
+        # try:
+        #     tabuleiro[index + BAIXO] += NORTE  #A célula abaixo da atual do robot tem uma parede a norte
+        # except:
+        #     pass
 
 # forwardOneSquare()
 # indexRobot += CIMA
