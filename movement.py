@@ -19,3 +19,11 @@ def forwardOneSquare():
 
 def backOneSquare():
     tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 1.45)
+
+def leftOneSquare():
+    turnLeft()
+    forwardOneSquare()
+
+def rightOneSquare():
+    turnRight()
+    forwardOneSquare()
