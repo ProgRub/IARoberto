@@ -6,6 +6,7 @@ from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, Gyro
 from movement import *
 import os
 import time
+import sys
 os.system('setfont Lat15-TerminusBold14')
 
 TAMANHO_TABULEIRO = 6
@@ -13,54 +14,105 @@ DIREITA = 1
 ESQUERDA = -1
 CIMA = TAMANHO_TABULEIRO
 BAIXO = -TAMANHO_TABULEIRO
+PAREDE = "2"
+SEM_PAREDE = "1"
+TBD = "0"
+POS_NORTE = 0
+POS_SUL = 2
+POS_ESTE = 1
+POS_OESTE=3
+POS_OVELHA=4
 NORTE="N"
 ESTE="E"
 OESTE="W"
 SUL="S"
-OVELHA = "O"
-ROBOT_ORIENTACOES = NORTE + ESTE + OESTE + SUL
+OVELHA = "1"
+ROBOT_ORIENTACOES = NORTE + ESTE + SUL+ OESTE
 indexRobotOrientacoes=0
 indexRobot=0
+colorSensor = ColorSensor()
+colorSensor.mode = 'COL-REFLECT'
+colorSensor.calibrate_white()
+sonic = UltrasonicSensor()
+sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
+units = sonic.units
+
+
+def debug_print(*args, **kwargs):
+    '''Print debug messages to stderr.
+    This shows up in the output panel in VS Code.
+    '''
+    print(*args, **kwargs, file=sys.stderr)
 
 tabuleiro = []
 for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
-    tabuleiro.append("")
+    tabuleiro.append("00000")
 
 for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
     if (index % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index]+=OESTE #Parede a oeste
+        tabuleiro[index]=list(tabuleiro[index])
+        tabuleiro[index][POS_OESTE]=PAREDE #Parede a oeste
+        tabuleiro[index]="".join(tabuleiro[index])
     if (index >= 30):
-        tabuleiro[index] += NORTE #Parede a norte
+        tabuleiro[index]=list(tabuleiro[index])
+        tabuleiro[index] [POS_NORTE]= PAREDE #Parede a norte
+        tabuleiro[index]="".join(tabuleiro[index])
     if ((index - 5) % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index] += ESTE #Parede a este
+        tabuleiro[index]=list(tabuleiro[index])
+        tabuleiro[index] [POS_ESTE]= PAREDE #Parede a este
+        tabuleiro[index]="".join(tabuleiro[index])
     if (index < 6):
-        tabuleiro[index]+=SUL #Parede a sul
+        tabuleiro[index]=list(tabuleiro[index])
+        tabuleiro[index][POS_SUL]=PAREDE #Parede a sul
+        tabuleiro[index]="".join(tabuleiro[index])
 
-def foundWall():
+def updateBoard(foundWall: bool, foundSheep: bool):
     if indexRobotOrientacoes == 0: #Virado para norte
-        tabuleiro[index] += NORTE  #Parede a norte
-        # try:
-        #     tabuleiro[index + CIMA] += SUL  #A célula acima da atual do robot tem uma parede a sul
-        #except:
-        #    pass
+        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_NORTE]= (PAREDE if foundWall else SEM_PAREDE) #Parede a norte
+        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot + CIMA]=list(tabuleiro[indexRobot + CIMA])
+        tabuleiro[indexRobot + CIMA][POS_SUL] = (PAREDE if foundWall else SEM_PAREDE)  #A célula acima da atual do robot tem uma parede a sul
+        if foundSheep:
+            tabuleiro[indexRobot+CIMA][POS_OVELHA] = OVELHA
+        tabuleiro[indexRobot + CIMA] = "".join(tabuleiro[indexRobot + CIMA])
     elif indexRobotOrientacoes == 1: #Virado para este
-        tabuleiro[index] += ESTE  #Parede a este
-        # if (index+DIREITA)%TAMANHO_TABULEIRO!=0:
-        #     tabuleiro[
-        #         index +
-        #         DIREITA] += OESTE  #A célula à direita do robot tem uma parede a oeste
+        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_ESTE]= (PAREDE if foundWall else SEM_PAREDE)  #Parede a este
+        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot+
+            DIREITA]=list(tabuleiro[indexRobot+
+            DIREITA])
+        tabuleiro[
+            indexRobot +
+            DIREITA] [POS_OESTE]= (PAREDE if foundWall else SEM_PAREDE)  #A célula à direita do robot tem uma parede a oeste
+        if foundSheep:
+            tabuleiro[indexRobot+DIREITA][POS_OVELHA] = OVELHA
+        tabuleiro[indexRobot+
+            DIREITA]="".join(tabuleiro[indexRobot+
+            DIREITA])
     elif indexRobotOrientacoes == 2: #Virado para oeste
-        tabuleiro[index] += OESTE  #Parede a oeste
-        # if index % TAMANHO_TABULEIRO != 0:
-        #     tabuleiro[
-        #         index +
-        #         ESQUERDA] += ESTE  #A célula à esquerda do robot tem uma parede a este
+        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot] [POS_OESTE]= (PAREDE if foundWall else SEM_PAREDE)  #Parede a oeste
+        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot +ESQUERDA]=list(tabuleiro[indexRobot +ESQUERDA])
+        # A célula à esquerda do robot tem uma parede a este
+        tabuleiro[indexRobot +
+                  ESQUERDA][POS_ESTE] = (PAREDE if foundWall else SEM_PAREDE)
+        if foundSheep:
+            tabuleiro[indexRobot+ESQUERDA][POS_OVELHA] = OVELHA
+        tabuleiro[indexRobot + ESQUERDA] = "".join(tabuleiro[indexRobot +
+            ESQUERDA])
     else: #indexRobotOrientacoes==3 // Virado para sul
-        tabuleiro[index] += SUL  #Parede a sul
-        # try:
-        #     tabuleiro[index + BAIXO] += NORTE  #A célula abaixo da atual do robot tem uma parede a norte
-        # except:
-        #     pass
+        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_SUL] = (PAREDE if foundWall else SEM_PAREDE)  #Parede a sul
+        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot + BAIXO]=list(tabuleiro[indexRobot + BAIXO])
+        tabuleiro[indexRobot + BAIXO] [POS_NORTE]= (PAREDE if foundWall else SEM_PAREDE)  #A célula acima da atual do robot tem uma parede a norte
+        if foundSheep:
+            tabuleiro[indexRobot+BAIXO][POS_OVELHA] = OVELHA
+        tabuleiro[indexRobot + BAIXO] = "".join(tabuleiro[indexRobot + BAIXO])
+
 
 # forwardOneSquare()
 # indexRobot += CIMA
@@ -149,25 +201,59 @@ tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 # sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
 # units = sonic.units
 # while True:
-#     print(str(sonic.value()//10))
+#     print((sonic.value()//10) >4 and (sonic.value()//10)<30)
+
+
+
+def recon():
+    global indexRobot, indexRobotOrientacoes
+    indexRobot=0
+    while True:
+        if (indexRobot == 5):
+            debug_print(", ".join(tabuleiro))
+            break
+        if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
+            ovelha = checkSheep()
+            parede = checkFrontWall()
+            updateBoard(parede,ovelha)
+            turnRight()
+            indexRobotOrientacoes=(indexRobotOrientacoes+1)%4
+        if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
+            ovelha = checkSheep()
+            parede = checkFrontWall()
+            updateBoard(parede,ovelha)
+        forwardOneSquare()
+        indexRobot += DIREITA
+        turnLeft()
+        if indexRobotOrientacoes == 0:
+            indexRobotOrientacoes = 3
+        else:
+            indexRobotOrientacoes-=1
+
+
 
 
 """COLOR"""
-tank_drive.on(SpeedPercent(15),SpeedPercent(15))
-colorSensor = ColorSensor()
-colorSensor.mode = 'COL-REFLECT'
-colorSensor.calibrate_white()
-while True:
-    if (colorSensor.rgb[0] > 240 and colorSensor.rgb[1] < 50 and colorSensor.rgb[2] < 50):
-        tank_drive.stop()
-        tank_drive.on_for_rotations(SpeedPercent(-15), SpeedPercent(-15), 0.36)
-        tank_drive.stop()
-        turnRight()
-        tank_drive.on(SpeedPercent(15),SpeedPercent(15))
-    #elif (colorSensor.rgb[0]<50 and colorSensor.rgb[1]<50 and colorSensor.rgb[2]<50):
-        #tank_drive.stop()
-        #break
-    print(colorSensor.rgb)
+
+
+def checkFrontWall():
+    tank_drive.on(SpeedPercent(15),SpeedPercent(15))
+    while True:
+        if (colorSensor.rgb[0] > 230 and colorSensor.rgb[1] < 60 and colorSensor.rgb[2] < 60): #detetar laranja (parede)
+            tank_drive.stop()
+            tank_drive.on_for_rotations(SpeedPercent(-15), SpeedPercent(-15), 0.36)
+            tank_drive.stop()
+            return True
+        elif (colorSensor.rgb[0]<50 and colorSensor.rgb[1]<50 and colorSensor.rgb[2]<50): #detetar preto (não é parede)
+            tank_drive.stop()
+            tank_drive.on_for_rotations(SpeedPercent(-15), SpeedPercent(-15), 0.36)
+            tank_drive.stop()
+            return False
+        # print(colorSensor.rgb)
+
+def checkSheep():
+    return (sonic.value()//10) >4 and (sonic.value()//10)<30
+
 
 # from ev3dev.ev3 import *
 # import os
@@ -179,3 +265,5 @@ while True:
 # mR.run_to_rel_pos(position_sp=-840, speed_sp = 250)
 # mL.wait_while('running')
 # mR.wait_while('running')
+
+recon()
