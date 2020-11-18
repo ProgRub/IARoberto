@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-# from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
-# from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
-# from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
-# from movement import *
-# import os
-# import time
-# os.system('setfont Lat15-TerminusBold14')
+from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
+from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
+from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
+from movement import *
+import os
+import time
+os.system('setfont Lat15-TerminusBold14')
 
 TAMANHO_TABULEIRO = 6
 DIREITA = 1
@@ -75,11 +75,11 @@ def foundWall():
 # indexRobot+=DIREITA
 # print(indexRobot)
 
-print(", ".join(tabuleiro))
+# print(", ".join(tabuleiro))
 
 # while True:
 #     time.sleep(5)
-# tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
+tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 # tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 1.45*5)
 # tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 182)
 # time.sleep(2)
@@ -153,10 +153,21 @@ print(", ".join(tabuleiro))
 
 
 """COLOR"""
-# colorSensor = ColorSensor()
-# colorSensor.mode = 'COL-COLOR'
-# while True:
-#     print(colorSensor.value())
+tank_drive.on(SpeedPercent(15),SpeedPercent(15))
+colorSensor = ColorSensor()
+colorSensor.mode = 'COL-REFLECT'
+colorSensor.calibrate_white()
+while True:
+    if (colorSensor.rgb[0] > 240 and colorSensor.rgb[1] < 50 and colorSensor.rgb[2] < 50):
+        tank_drive.stop()
+        tank_drive.on_for_rotations(SpeedPercent(-15), SpeedPercent(-15), 0.36)
+        tank_drive.stop()
+        turnRight()
+        tank_drive.on(SpeedPercent(15),SpeedPercent(15))
+    #elif (colorSensor.rgb[0]<50 and colorSensor.rgb[1]<50 and colorSensor.rgb[2]<50):
+        #tank_drive.stop()
+        #break
+    print(colorSensor.rgb)
 
 # from ev3dev.ev3 import *
 # import os
