@@ -2,8 +2,8 @@
 
 from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
 from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
-from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
-from movement import *
+from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor
+import movement
 import os
 import time
 import sys
@@ -36,6 +36,7 @@ colorSensor.calibrate_white()
 sonic = UltrasonicSensor()
 sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
 units = sonic.units
+tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 
 
 def debug_print(*args, **kwargs):
@@ -113,6 +114,36 @@ def updateBoard(foundWall: bool, foundSheep: bool):
             tabuleiro[indexRobot+BAIXO][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + BAIXO] = "".join(tabuleiro[indexRobot + BAIXO])
 
+def turnRight():
+    global indexRobotOrientacoes
+    movement.turnRight()
+    indexRobotOrientacoes= (indexRobotOrientacoes+1)%4
+
+def turnLeft():
+    global indexRobotOrientacoes
+    movement.turnLeft()
+    indexRobotOrientacoes = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
+
+def goForward():
+    global indexRobot, indexRobotOrientacoes
+    if indexRobotOrientacoes == 0:
+        indexRobot+=CIMA
+    elif indexRobotOrientacoes == 1:
+        indexRobot+=DIREITA
+    elif indexRobotOrientacoes == 2:
+        indexRobot+=BAIXO
+    else:
+        indexRobot+=ESQUERDA
+    movement.forwardOneSquare()
+
+def sidesToCheck():
+    global indexRobot
+    currentSquare = list(tabuleiro[indexRobot])
+    sides = []
+    for index in range(len(currentSquare) - 1):
+        if currentSquare[index] == TBD:
+            sides.append(index)
+    return sides
 
 # forwardOneSquare()
 # indexRobot += CIMA
@@ -131,7 +162,6 @@ def updateBoard(foundWall: bool, foundSheep: bool):
 
 # while True:
 #     time.sleep(5)
-tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 # tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 1.45*5)
 # tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 182)
 # time.sleep(2)
@@ -195,47 +225,6 @@ tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 # tank_drive.on_for_rotations(SpeedPercent(25), SpeedPercent(-25),ROTACAO)
 
 
-
-# """ ULTRASONIC"""
-# sonic = UltrasonicSensor()
-# sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
-# units = sonic.units
-# while True:
-#     print((sonic.value()//10) >4 and (sonic.value()//10)<30)
-
-
-
-def recon():
-    global indexRobot, indexRobotOrientacoes
-    indexRobot=0
-    while True:
-        if (indexRobot == 5):
-            debug_print(", ".join(tabuleiro))
-            break
-        if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
-            ovelha = checkSheep()
-            parede = checkFrontWall()
-            updateBoard(parede,ovelha)
-            turnRight()
-            indexRobotOrientacoes=(indexRobotOrientacoes+1)%4
-        if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
-            ovelha = checkSheep()
-            parede = checkFrontWall()
-            updateBoard(parede,ovelha)
-        forwardOneSquare()
-        indexRobot += DIREITA
-        turnLeft()
-        if indexRobotOrientacoes == 0:
-            indexRobotOrientacoes = 3
-        else:
-            indexRobotOrientacoes-=1
-
-
-
-
-"""COLOR"""
-
-
 def checkFrontWall():
     tank_drive.on(SpeedPercent(15),SpeedPercent(15))
     while True:
@@ -252,18 +241,44 @@ def checkFrontWall():
         # print(colorSensor.rgb)
 
 def checkSheep():
-    return (sonic.value()//10) >4 and (sonic.value()//10)<30
+    return (sonic.value()//10) > 4 and (sonic.value()//10)<30
 
-
-# from ev3dev.ev3 import *
-# import os
-# mL = LargeMotor('outB'); mL.stop_action = 'hold'
-# mR = LargeMotor('outC'); mR.stop_action = 'hold'
-# print('Hello, my name is ROBERTO!')
-# Sound.speak('Hello, my name is ROBERTO!').wait()
-# mL.run_to_rel_pos(position_sp= 840, speed_sp = 250)
-# mR.run_to_rel_pos(position_sp=-840, speed_sp = 250)
-# mL.wait_while('running')
-# mR.wait_while('running')
+def recon():
+    global indexRobot, indexRobotOrientacoes
+    indexRobot=0
+    while True:
+        debug_print(index)
+        debug_print(sidesToCheck())
+        ladosVerificar=sidesToCheck()
+        for lado in ladosVerificar:
+            while (indexRobotOrientacoes != lado):
+                turnRight()
+            ovelha=checkSheep()
+            parede = checkFrontWall()
+            updateBoard(parede,ovelha)
+        quadrado = list(tabuleiro[index])
+        while (quadrado[index] == PAREDE):
+            turnRight()
+        goForward()
+        # if (indexRobot == 5):
+        #     debug_print(", ".join(tabuleiro))
+        #     break
+        # if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
+        #     ovelha = checkSheep()
+        #     parede = checkFrontWall()
+        #     updateBoard(parede,ovelha)
+        #     movement.turnRight()
+        #     indexRobotOrientacoes=(indexRobotOrientacoes+1)%4
+        # if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
+        #     ovelha = checkSheep()
+        #     parede = checkFrontWall()
+        #     updateBoard(parede,ovelha)
+        # movement.forwardOneSquare()
+        # indexRobot += DIREITA
+        # movement.turnLeft()
+        # if indexRobotOrientacoes == 0:
+        #     indexRobotOrientacoes = 3
+        # else:
+        #     indexRobotOrientacoes-=1
 
 recon()
