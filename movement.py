@@ -3,7 +3,7 @@ from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
 
 
-ROTACAO = 180
+ROTACAO = 181
 VELOCIDADE=15
 TAMANHO_QUADRADO=26
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
-from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
+from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, MoveTank
+from ev3dev2.sensor import INPUT_1, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor
 import movement
 import os
@@ -20,16 +20,16 @@ TBD = "0"
 POS_NORTE = 0
 POS_SUL = 2
 POS_ESTE = 1
-POS_OESTE=3
-POS_OVELHA=4
-NORTE="N"
-ESTE="E"
-OESTE="W"
-SUL="S"
+POS_OESTE = 3
+POS_OVELHA = 4
+NORTE = "N"
+ESTE = "E"
+OESTE = "W"
+SUL = "S"
 OVELHA = "1"
-ROBOT_ORIENTACOES = NORTE + ESTE + SUL+ OESTE
-indexRobotOrientacoes=0
-indexRobot=0
+ROBOT_ORIENTACOES = NORTE + ESTE + SUL + OESTE
+indexRobotOrientacoes = 0
+indexRobot = 0
 colorSensor = ColorSensor()
 colorSensor.mode = 'COL-REFLECT'
 colorSensor.calibrate_white()
@@ -45,107 +45,123 @@ def debug_print(*args, **kwargs):
     '''
     print(*args, **kwargs, file=sys.stderr)
 
+
 tabuleiro = []
 for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
     tabuleiro.append("00000")
 
 for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
     if (index % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index]=list(tabuleiro[index])
-        tabuleiro[index][POS_OESTE]=PAREDE #Parede a oeste
-        tabuleiro[index]="".join(tabuleiro[index])
+        tabuleiro[index] = list(tabuleiro[index])
+        tabuleiro[index][POS_OESTE] = PAREDE  # Parede a oeste
+        tabuleiro[index] = "".join(tabuleiro[index])
     if (index >= 30):
-        tabuleiro[index]=list(tabuleiro[index])
-        tabuleiro[index] [POS_NORTE]= PAREDE #Parede a norte
-        tabuleiro[index]="".join(tabuleiro[index])
+        tabuleiro[index] = list(tabuleiro[index])
+        tabuleiro[index][POS_NORTE] = PAREDE  # Parede a norte
+        tabuleiro[index] = "".join(tabuleiro[index])
     if ((index - 5) % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index]=list(tabuleiro[index])
-        tabuleiro[index] [POS_ESTE]= PAREDE #Parede a este
-        tabuleiro[index]="".join(tabuleiro[index])
+        tabuleiro[index] = list(tabuleiro[index])
+        tabuleiro[index][POS_ESTE] = PAREDE  # Parede a este
+        tabuleiro[index] = "".join(tabuleiro[index])
     if (index < 6):
-        tabuleiro[index]=list(tabuleiro[index])
-        tabuleiro[index][POS_SUL]=PAREDE #Parede a sul
-        tabuleiro[index]="".join(tabuleiro[index])
+        tabuleiro[index] = list(tabuleiro[index])
+        tabuleiro[index][POS_SUL] = PAREDE  # Parede a sul
+        tabuleiro[index] = "".join(tabuleiro[index])
+
 
 def updateBoard(foundWall: bool, foundSheep: bool):
-    if indexRobotOrientacoes == POS_NORTE: #Virado para norte
-        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
-        tabuleiro[indexRobot][POS_NORTE]= (PAREDE if foundWall else SEM_PAREDE) #Parede a norte
-        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
-        tabuleiro[indexRobot + CIMA]=list(tabuleiro[indexRobot + CIMA])
-        tabuleiro[indexRobot + CIMA][POS_SUL] = (PAREDE if foundWall else SEM_PAREDE)  #A célula acima da atual do robot tem uma parede a sul
+    if indexRobotOrientacoes == POS_NORTE:  # Virado para norte
+        tabuleiro[indexRobot] = list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_NORTE] = (
+            PAREDE if foundWall else SEM_PAREDE)  # Parede a norte
+        tabuleiro[indexRobot] = "".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot + CIMA] = list(tabuleiro[indexRobot + CIMA])
+        # A célula acima da atual do robot tem uma parede a sul
+        tabuleiro[indexRobot +
+                  CIMA][POS_SUL] = (PAREDE if foundWall else SEM_PAREDE)
         if foundSheep:
             tabuleiro[indexRobot+CIMA][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + CIMA] = "".join(tabuleiro[indexRobot + CIMA])
-    elif indexRobotOrientacoes == POS_ESTE: #Virado para este
-        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
-        tabuleiro[indexRobot][POS_ESTE]= (PAREDE if foundWall else SEM_PAREDE)  #Parede a este
-        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
-        tabuleiro[indexRobot+
-            DIREITA]=list(tabuleiro[indexRobot+
-            DIREITA])
+    elif indexRobotOrientacoes == POS_ESTE:  # Virado para este
+        tabuleiro[indexRobot] = list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_ESTE] = (
+            PAREDE if foundWall else SEM_PAREDE)  # Parede a este
+        tabuleiro[indexRobot] = "".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot +
+                  DIREITA] = list(tabuleiro[indexRobot +
+                                            DIREITA])
         tabuleiro[
             indexRobot +
-            DIREITA] [POS_OESTE]= (PAREDE if foundWall else SEM_PAREDE)  #A célula à direita do robot tem uma parede a oeste
+            DIREITA][POS_OESTE] = (PAREDE if foundWall else SEM_PAREDE)  # A célula à direita do robot tem uma parede a oeste
         if foundSheep:
             tabuleiro[indexRobot+DIREITA][POS_OVELHA] = OVELHA
-        tabuleiro[indexRobot+
-            DIREITA]="".join(tabuleiro[indexRobot+
-            DIREITA])
-    elif indexRobotOrientacoes == POS_OESTE: #Virado para oeste
-        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
-        tabuleiro[indexRobot] [POS_OESTE]= (PAREDE if foundWall else SEM_PAREDE)  #Parede a oeste
-        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
-        tabuleiro[indexRobot +ESQUERDA]=list(tabuleiro[indexRobot +ESQUERDA])
+        tabuleiro[indexRobot +
+                  DIREITA] = "".join(tabuleiro[indexRobot +
+                                               DIREITA])
+    elif indexRobotOrientacoes == POS_OESTE:  # Virado para oeste
+        tabuleiro[indexRobot] = list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_OESTE] = (
+            PAREDE if foundWall else SEM_PAREDE)  # Parede a oeste
+        tabuleiro[indexRobot] = "".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot +
+                  ESQUERDA] = list(tabuleiro[indexRobot + ESQUERDA])
         # A célula à esquerda do robot tem uma parede a este
         tabuleiro[indexRobot +
                   ESQUERDA][POS_ESTE] = (PAREDE if foundWall else SEM_PAREDE)
         if foundSheep:
             tabuleiro[indexRobot+ESQUERDA][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + ESQUERDA] = "".join(tabuleiro[indexRobot +
-            ESQUERDA])
-    else: #indexRobotOrientacoes==3 // Virado para sul
-        tabuleiro[indexRobot]=list(tabuleiro[indexRobot])
-        tabuleiro[indexRobot][POS_SUL] = (PAREDE if foundWall else SEM_PAREDE)  #Parede a sul
-        tabuleiro[indexRobot]="".join(tabuleiro[indexRobot])
-        tabuleiro[indexRobot + BAIXO]=list(tabuleiro[indexRobot + BAIXO])
-        tabuleiro[indexRobot + BAIXO] [POS_NORTE]= (PAREDE if foundWall else SEM_PAREDE)  #A célula acima da atual do robot tem uma parede a norte
+                                                             ESQUERDA])
+    else:  # indexRobotOrientacoes==3 // Virado para sul
+        tabuleiro[indexRobot] = list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot][POS_SUL] = (
+            PAREDE if foundWall else SEM_PAREDE)  # Parede a sul
+        tabuleiro[indexRobot] = "".join(tabuleiro[indexRobot])
+        tabuleiro[indexRobot + BAIXO] = list(tabuleiro[indexRobot + BAIXO])
+        # A célula acima da atual do robot tem uma parede a norte
+        tabuleiro[indexRobot +
+                  BAIXO][POS_NORTE] = (PAREDE if foundWall else SEM_PAREDE)
         if foundSheep:
             tabuleiro[indexRobot+BAIXO][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + BAIXO] = "".join(tabuleiro[indexRobot + BAIXO])
 
+
 def turnRight():
     global indexRobotOrientacoes
     movement.turnRight()
-    indexRobotOrientacoes= (indexRobotOrientacoes+1)%4
+    indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4
+
 
 def turnLeft():
     global indexRobotOrientacoes
     movement.turnLeft()
     indexRobotOrientacoes = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
 
+
 def goForward():
     global indexRobot, indexRobotOrientacoes
     if indexRobotOrientacoes == POS_NORTE:
-        indexRobot+=CIMA
+        indexRobot += CIMA
     elif indexRobotOrientacoes == POS_ESTE:
-        indexRobot+=DIREITA
+        indexRobot += DIREITA
     elif indexRobotOrientacoes == POS_SUL:
-        indexRobot+=BAIXO
+        indexRobot += BAIXO
     else:
-        indexRobot+=ESQUERDA
+        indexRobot += ESQUERDA
     movement.forwardOneSquare()
 
-def canGoForward():
-    if indexRobotOrientacoes == POS_NORTE:
-        ovelhaFrente = list(tabuleiro[indexRobot+CIMA])[4]=="1"
-    elif indexRobotOrientacoes == POS_ESTE:
-        ovelhaFrente = list(tabuleiro[indexRobot+DIREITA])[4]=="1"
-    elif indexRobotOrientacoes == POS_SUL:
-        ovelhaFrente = list(tabuleiro[indexRobot+BAIXO])[4]=="1"
+
+def canGoForward(orientacao):
+    if orientacao == POS_NORTE:
+        ovelhaFrente = list(tabuleiro[indexRobot+CIMA])[4] == "1"
+    elif orientacao == POS_ESTE:
+        ovelhaFrente = list(tabuleiro[indexRobot+DIREITA])[4] == "1"
+    elif orientacao == POS_SUL:
+        ovelhaFrente = list(tabuleiro[indexRobot+BAIXO])[4] == "1"
     else:
-        ovelhaFrente = list(tabuleiro[indexRobot+ESQUERDA])[4]=="1"
-    return list(tabuleiro[indexRobot])[indexRobotOrientacoes] == PAREDE or ovelhaFrente
+        ovelhaFrente = list(tabuleiro[indexRobot+ESQUERDA])[4] == "1"
+    return not(list(tabuleiro[indexRobot])[orientacao] == PAREDE or ovelhaFrente)
+
 
 def sidesToCheck():
     global indexRobot
@@ -156,161 +172,111 @@ def sidesToCheck():
             sides.append(index)
     return sides
 
-# forwardOneSquare()
-# indexRobot += CIMA
-# print(indexRobot)
-# backOneSquare()
-# indexRobot+=BAIXO
-# print(indexRobot)
-# turnLeft()
-# indexRobot+=ESQUERDA
-# print(indexRobot)
-# turnRight()
-# indexRobot+=DIREITA
-# print(indexRobot)
-
-# print(", ".join(tabuleiro))
-
-# while True:
-#     time.sleep(5)
-tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
-# tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 1.45*5)
-# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 182)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), 180)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_degrees(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO)
-
-# tank_drive.gyro = GyroSensor()
-# tank_drive.gyro.calibrate()
-# time.sleep(10)
-# tank_drive.turn_right(SpeedPercent(VELOCIDADE), 90)
-# time.sleep(2)
-# tank_drive.turn_right(SpeedPercent(VELOCIDADE), 90)
-# time.sleep(2)
-# tank_drive.turn_right(SpeedPercent(VELOCIDADE), 90)
-# time.sleep(2)
-# tank_drive.turn_right(SpeedPercent(VELOCIDADE),90)
-# time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
-# time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
-# time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
-# time.sleep(2)
-# tank_drive.turn_left(SpeedPercent(VELOCIDADE),90)
-
-# tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
-# # tank_drive.on_for_degrees(SpeedPercent(50), SpeedPercent(75), 90)
-# # tank_drive.on_for_rotations(SpeedPercent(25), SpeedPercent(-25), ROTACAO)
-# tank_drive.on_for_rotations(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), ROTACAO,False)
-# time.sleep(2)
-# # tank_drive.on_for_rotations(SpeedPercent(-25), SpeedPercent(25), ROTACAO)
-# tank_drive.on_for_rotations(SpeedPercent(VELOCIDADE), SpeedPercent(-VELOCIDADE), ROTACAO,False)
-# time.sleep(2)
-# tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO,False)
-# time.sleep(2)
-# tank_drive.on_for_rotations(SpeedPercent(-VELOCIDADE), SpeedPercent(VELOCIDADE), ROTACAO,False)# Attach large motors to ports B and C
-# mB = LargeMotor('outB')
-# mC = LargeMotor('outC')
-
-# Make the robot do a hard turn right (on the spot) with
-# 685 deg wheel rotation (speed 40%, brake on).
-# Assuming speed_sp=900 gives full speed then
-# speed_sp=360 gives 40% speed
-# mB.run_to_rel_pos(position_sp=685, speed_sp=360, stop_action="brake")
-# mC.run_to_rel_pos(position_sp=-685, speed_sp=360, stop_action="brake")
-# tank_drive.on_for_rotations(SpeedPercent(25), SpeedPercent(-25),ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_rotations(SpeedPercent(25), SpeedPercent(-25),ROTACAO)
-# time.sleep(2)
-# tank_drive.on_for_rotations(SpeedPercent(25), SpeedPercent(-25),ROTACAO)
-
-
-
-# """ ULTRASONIC"""
-# sonic = UltrasonicSensor()
-# sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
-# units = sonic.units
-# while True:
-#     print((sonic.value()//10) >4 and (sonic.value()//10)<30)
 
 def checkFrontWall():
-    tank_drive.on(SpeedPercent(15),SpeedPercent(15))
+    tank_drive.on(SpeedPercent(15), SpeedPercent(15))
     while True:
-        if (colorSensor.rgb[0] > 230 and colorSensor.rgb[1] < 60 and colorSensor.rgb[2] < 60): #detetar laranja (parede)
+        # detetar laranja (parede)
+        if (colorSensor.rgb[0] > 230 and colorSensor.rgb[1] < 60 and colorSensor.rgb[2] < 60):
             tank_drive.stop()
-            tank_drive.on_for_rotations(SpeedPercent(-15), SpeedPercent(-15), 0.36)
+            tank_drive.on_for_rotations(
+                SpeedPercent(-15), SpeedPercent(-15), 0.36)
             tank_drive.stop()
             return True
-        elif (colorSensor.rgb[0]<50 and colorSensor.rgb[1]<50 and colorSensor.rgb[2]<50): #detetar preto (não é parede)
+        # detetar preto (não é parede)
+        elif (colorSensor.rgb[0] < 50 and colorSensor.rgb[1] < 50 and colorSensor.rgb[2] < 50):
             tank_drive.stop()
-            tank_drive.on_for_rotations(SpeedPercent(-15), SpeedPercent(-15), 0.36)
+            tank_drive.on_for_rotations(
+                SpeedPercent(-15), SpeedPercent(-15), 0.36)
             tank_drive.stop()
             return False
         # print(colorSensor.rgb)
 
+
 def checkSheep():
-    return (sonic.value()//10) > 4 and (sonic.value()//10)<30
+    global sonic
+    return (sonic.value() // 10) > 4 and (sonic.value() // 10) < 30
+
+
+def nextSquareToCheck(quadradosDesconhecidos):
+    global indexRobot
+    precisaVoltarAtras = False
+    for index in range(((indexRobot // 6) - 1) * 6, (indexRobot // 6) * 6):
+        if index in quadradosDesconhecidos:
+            precisaVoltarAtras = True
+            break
+    # debug_print(precisaVoltarAtras)
+    #TODO: fazer verificacoes relativamente as bordas
+    if indexRobot % (TAMANHO_TABULEIRO * 2) > 5:  # está nas linhas 1, 3 ou 5
+        if (not precisaVoltarAtras or (precisaVoltarAtras and (indexRobot+BAIXO) not in quadradosDesconhecidos)) and indexRobot+ESQUERDA not in quadradosDesconhecidos and canGoForward(indexRobotOrientacoes):
+            return ESQUERDA
+        elif (not precisaVoltarAtras or (precisaVoltarAtras and (indexRobot + BAIXO) not in quadradosDesconhecidos)) and not indexRobot + ESQUERDA not in quadradosDesconhecidos and canGoForward(indexRobotOrientacoes):
+            return DIREITA
+        elif canGoForward(indexRobotOrientacoes):
+            return BAIXO
+    else:  # está nas linhas 0, 2 ou 4
+        if (not precisaVoltarAtras or (precisaVoltarAtras and (indexRobot+BAIXO) not in quadradosDesconhecidos)) and indexRobot+DIREITA not in quadradosDesconhecidos and canGoForward(indexRobotOrientacoes):
+            return DIREITA
+        elif (not precisaVoltarAtras or (precisaVoltarAtras and (indexRobot + BAIXO) not in quadradosDesconhecidos)) and not indexRobot + DIREITA not in quadradosDesconhecidos and canGoForward(indexRobotOrientacoes):
+            return ESQUERDA
+        elif canGoForward(indexRobotOrientacoes):
+            return BAIXO
+
 
 def recon():
     global indexRobot, indexRobotOrientacoes
-    indexRobot=0
+    indexRobot = 0
+    # proximoQuadrado =
+    quadradosDesconhecidos = []
+    for index in range(len(tabuleiro)):
+        if (TBD in list(tabuleiro[index])[:4]):
+            quadradosDesconhecidos.append(index)
     while True:
-        debug_print(indexRobot)
-        ladosVerificar=sidesToCheck()
-        debug_print(indexRobotOrientacoes)
+        debug_print(quadradosDesconhecidos)
+        ladosVerificar = sidesToCheck()
         if indexRobotOrientacoes in ladosVerificar:
-            aux=ladosVerificar[0]
-            auxIndex=ladosVerificar.index(indexRobotOrientacoes)
-            ladosVerificar[0]=indexRobotOrientacoes
-            ladosVerificar[auxIndex]=aux
+            aux = ladosVerificar[0]
+            auxIndex = ladosVerificar.index(indexRobotOrientacoes)
+            ladosVerificar[0] = indexRobotOrientacoes
+            ladosVerificar[auxIndex] = aux
             # ladosVerificar=ladosVerificar[0]+ladosVerificar[1:].sort()
+        debug_print(indexRobot)
         debug_print(ladosVerificar)
         for lado in ladosVerificar:
             while (indexRobotOrientacoes != lado):
-                auxIndex = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
-                if(auxIndex ==lado):
+                indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
+                if(indexToLeft == lado):
                     turnLeft()
                 else:
                     turnRight()
-            ovelha=checkSheep()
+            ovelha = checkSheep()
             parede = checkFrontWall()
-            updateBoard(parede,ovelha)
-        quadrado = list(tabuleiro[indexRobot][:4])
-        debug_print(quadrado)
-        while (canGoForward()):
-            turnRight()
+            updateBoard(parede, ovelha)
+        try:
+            quadradosDesconhecidos.remove(indexRobot)
+        except:
+            pass
+        proximoIndex = nextSquareToCheck(quadradosDesconhecidos)
+        debug_print(proximoIndex)
+        orientacao = indexRobotOrientacoes
+        if proximoIndex == BAIXO:
+            orientacao = 2
+        elif proximoIndex == DIREITA:
+            orientacao = 1
+        elif proximoIndex == ESQUERDA:
+            orientacao = 3
+        else:
+            orientacao = 0
+        while (not canGoForward(indexRobotOrientacoes)):
+            indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
+            if(indexToLeft == tabuleiro[indexRobot].index(SEM_PAREDE)):
+                turnLeft()
+            else:
+                turnRight()
+            if indexRobotOrientacoes == orientacao and canGoForward(orientacao):
+                break
+        # debug_print(indexRobotOrientacoes)
         goForward()
-        # if (indexRobot == 5):
-        #     debug_print(", ".join(tabuleiro))
-        #     break
-        # if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
-        #     ovelha = checkSheep()
-        #     parede = checkFrontWall()
-        #     updateBoard(parede,ovelha)
-        #     movement.turnRight()
-        #     indexRobotOrientacoes=(indexRobotOrientacoes+1)%4
-        # if(list(tabuleiro[indexRobot])[indexRobotOrientacoes]=="0"):
-        #     ovelha = checkSheep()
-        #     parede = checkFrontWall()
-        #     updateBoard(parede,ovelha)
-        # movement.forwardOneSquare()
-        # indexRobot += DIREITA
-        # movement.turnLeft()
-        # if indexRobotOrientacoes == 0:
-        #     indexRobotOrientacoes = 3
-        # else:
-        #     indexRobotOrientacoes-=1
+
 
 recon()
