@@ -16,7 +16,7 @@ CIMA = TAMANHO_TABULEIRO
 BAIXO = -TAMANHO_TABULEIRO
 PAREDE = "2"
 SEM_PAREDE = "1"
-TBD = "0"
+DESCONHECIDO = "0"
 POS_NORTE = 0
 POS_SUL = 2
 POS_ESTE = 1
@@ -47,14 +47,14 @@ def debug_print(*args, **kwargs):
 
 
 tabuleiro = []
-for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
-    tabuleiro.append("00000")
+for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):                              
+    tabuleiro.append("00000")                                                           # Preencher cada posição do array. Vai ser uma string do genero "00000" e cada caracter da string diz respeito a ter ovelha, parede etc. No inicio não se sabe de nada dai começar com 00000
 
-for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
-    if (index % TAMANHO_TABULEIRO == 0):
-        tabuleiro[index] = list(tabuleiro[index])
+for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):                              # O index vai ter todas as posições de 0 a 35
+    if (index % TAMANHO_TABULEIRO == 0):                                                # Se o index for 0
+        tabuleiro[index] = list(tabuleiro[index])                                       # Criar uma lista de listas em cada posição VERIFICAR RUBERN
         tabuleiro[index][POS_OESTE] = PAREDE  # Parede a oeste
-        tabuleiro[index] = "".join(tabuleiro[index])
+        tabuleiro[index] = "".join(tabuleiro[index])                                    
     if (index >= 30):
         tabuleiro[index] = list(tabuleiro[index])
         tabuleiro[index][POS_NORTE] = PAREDE  # Parede a norte
@@ -69,9 +69,10 @@ for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
         tabuleiro[index] = "".join(tabuleiro[index])
 
 
+#Após o tabuleriro já conter as paredes das bordas, agora são colocadas as paredes laranjas e as ovelhas.
 def updateBoard(foundWall: bool, foundSheep: bool):
     if indexRobotOrientacoes == POS_NORTE:  # Virado para norte
-        tabuleiro[indexRobot] = list(tabuleiro[indexRobot])
+        tabuleiro[indexRobot] = list(tabuleiro[indexRobot])                                 
         tabuleiro[indexRobot][POS_NORTE] = (
             PAREDE if foundWall else SEM_PAREDE)  # Parede a norte
         tabuleiro[indexRobot] = "".join(tabuleiro[indexRobot])
@@ -129,7 +130,7 @@ def updateBoard(foundWall: bool, foundSheep: bool):
 def turnRight():
     global indexRobotOrientacoes
     movement.turnRight()
-    indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4
+    indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4                                           
 
 
 def turnLeft():
@@ -151,7 +152,7 @@ def goForward():
     movement.forwardOneSquare()
 
 
-def canGoForward(orientacao):
+def canGoForward(orientacao):                                                              
     if orientacao == POS_NORTE:
         ovelhaFrente = list(tabuleiro[indexRobot+CIMA])[4] == "1"
     elif orientacao == POS_ESTE:
@@ -168,7 +169,7 @@ def sidesToCheck():
     currentSquare = list(tabuleiro[indexRobot])
     sides = []
     for index in range(len(currentSquare) - 1):
-        if currentSquare[index] == TBD:
+        if currentSquare[index] == DESCONHECIDO:
             sides.append(index)
     return sides
 
@@ -195,7 +196,7 @@ def checkFrontWall():
 
 def checkSheep():
     global sonic
-    return (sonic.value() // 10) > 4 and (sonic.value() // 10) < 30
+    return (sonic.value() // 10) > 4 and (sonic.value() // 10) < 30                                                 
 
 
 def nextSquareToCheck(quadradosDesconhecidos):
