@@ -230,7 +230,7 @@ def recon():
     # proximoQuadrado =
     quadradosDesconhecidos = []
     for index in range(len(tabuleiro)):
-        if (TBD in list(tabuleiro[index])[:4]):
+        if (DESCONHECIDO in list(tabuleiro[index])[:4]):
             quadradosDesconhecidos.append(index)
     while True:
         debug_print(quadradosDesconhecidos)
