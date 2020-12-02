@@ -3,7 +3,7 @@ from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
 
 ROTACAO = 181
-VELOCIDADE=15
+VELOCIDADE=20
 TAMANHO_QUADRADO=26
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 tank_drive.gyro = GyroSensor()
@@ -31,3 +31,12 @@ def leftOneSquare():
 def rightOneSquare():
     turnRight()
     forwardOneSquare()
+
+def backup():
+    tank_drive.stop()
+    tank_drive.on_for_rotations(
+        SpeedPercent(-VELOCIDADE), SpeedPercent(-VELOCIDADE), 0.42)
+    tank_drive.stop()
+
+def moveForwardForever():
+    tank_drive.on(SpeedPercent(VELOCIDADE), SpeedPercent(VELOCIDADE))
