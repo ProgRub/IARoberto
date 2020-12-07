@@ -3,6 +3,7 @@
 from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, MoveTank
 from ev3dev2.sensor import INPUT_1, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor
+from ev3dev2.button import Button
 import movement
 import os
 import time
@@ -31,7 +32,7 @@ ROBOT_ORIENTACOES = NORTE + ESTE + SUL + OESTE
 indexRobotOrientacoes = 0
 indexRobot = 0
 colorSensor = ColorSensor()
-colorSensor.mode = 'COL-REFLECT'
+colorSensor.mode = 'COL-AMBIENT'
 colorSensor.calibrate_white()
 sonic = UltrasonicSensor()
 sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
@@ -189,22 +190,22 @@ def checkFrontWall():
     movement.moveForwardForever()
     parede = False
     while True:
-        # detetar laranja (parede)
-        if (colorSensor.rgb[0] > 230 and colorSensor.rgb[1] < 60 and colorSensor.rgb[2] < 60):
+        # debug_print(colorSensor.rgb)
+        # detetar verde escuro (parede)
+        if (colorSensor.rgb[0] < 40 and colorSensor.rgb[1] < 90 and colorSensor.rgb[2] < 70):
             parede = True
             break
-        # detetar preto (não é parede)
-        elif (colorSensor.rgb[0] < 50 and colorSensor.rgb[1] < 50 and colorSensor.rgb[2] < 50):
+        # detetar branco (não é parede)
+        elif (colorSensor.rgb[0] > 230 and colorSensor.rgb[1] > 230 and colorSensor.rgb[2] > 230):
             break
-        # print(colorSensor.rgb)
     movement.backup()
     return parede
 
 
 def checkSheep():
     global sonic
-    debug_print("ULTRASONIC "+str(sonic.value()//10))
-    return (sonic.value() // 10) > 4 and (sonic.value() // 10) < 30
+    # debug_print("ULTRASONIC "+str(sonic.value()//10))
+    return (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40
 
 
 def nextSquareToCheck(quadradosDesconhecidos):
@@ -324,6 +325,8 @@ def recon():
                     turnRight()
             ovelha = checkSheep()
             parede = checkFrontWall()
+            if not ovelha:
+                ovelha = checkSheep()
             if parede:
                 numeroParedes += 1
             updateBoard(parede, ovelha)
@@ -353,5 +356,13 @@ def recon():
         goForward()
     # if numeroParedes == 5:
 
+def stop():
+    return 1/0
 
+btn = Button()
+btn.on_enter = stop
+movement.backup()
 recon()
+# while True:
+#     checkFrontWall()
+# movement.moveForwardForever()
