@@ -57,9 +57,9 @@ for index in range(TAMANHO_TABULEIRO * TAMANHO_TABULEIRO):
     # Se o index for 0
     if (index % TAMANHO_TABULEIRO == 0):
         # Criar uma lista de listas em cada posição VERIFICAR RUBERN
-        tabuleiro[index] = list(tabuleiro[index])
-        tabuleiro[index][POS_OESTE] = PAREDE  # Parede a oeste
-        tabuleiro[index] = "".join(tabuleiro[index])
+        tabuleiro[index] = list(tabuleiro[index])    # [[00000], [00000], [00000],..]
+        tabuleiro[index][POS_OESTE] = PAREDE  # Parede a oeste  [[00020], [00000], [00000], ...]
+        tabuleiro[index] = "".join(tabuleiro[index])    #[00020,00000, ...]
     if (index >= 30):
         tabuleiro[index] = list(tabuleiro[index])
         tabuleiro[index][POS_NORTE] = PAREDE  # Parede a norte
@@ -144,7 +144,7 @@ def turnLeft():
     indexRobotOrientacoes = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
 
 
-def goForward():
+def goForward():  #atualiza indexRobot(varivel global da posicao atual do robot) que é a posicao para que vai se mover no tabuleiro
     global indexRobot, indexRobotOrientacoes
     if indexRobotOrientacoes == POS_NORTE:
         indexRobot += CIMA
@@ -157,11 +157,11 @@ def goForward():
     movement.forwardOneSquare()
 
 
-def canGoForward(orientacao):
+def canGoForward(orientacao):  #verifica se existe parede ou ovelha a sua frente, para entao poder avancar na sua posicao atual.
     # TODO: fazer verificacoes relativamente as bordas
     if orientacao == POS_NORTE:
         try:
-            ovelhaFrente = list(tabuleiro[indexRobot + CIMA])[4] == "1"
+            ovelhaFrente = list(tabuleiro[indexRobot + CIMA])[4] == "1"  
         except:
             ovelhaFrente=False
     elif orientacao == POS_ESTE:
@@ -182,7 +182,7 @@ def canGoForward(orientacao):
     return not(list(tabuleiro[indexRobot])[orientacao] == PAREDE or ovelhaFrente)
 
 
-def sidesToCheck():
+def sidesToCheck():  # obtem posicoes que é necessario verificar na posicao atual, isso é, ainda sao DESCONHECIDAS do robot
     global indexRobot
     currentSquare = list(tabuleiro[indexRobot])
     sides = []
@@ -192,7 +192,7 @@ def sidesToCheck():
     return sides
 
 
-def checkFrontWall():
+def checkFrontWall(): # verifica se é ou nao parede
     movement.moveForwardForever()
     parede = False
     while True:
@@ -217,13 +217,13 @@ def checkFrontWall():
     return parede
 
 
-def checkSheep():
+def checkSheep(): #verifica ovelha a sua frente
     global sonic
     # debug_print("ULTRASONIC "+str(sonic.value()//10))
     return (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40
 
 
-def nextSquareToCheck(quadradosDesconhecidos):
+def nextSquareToCheck(quadradosDesconhecidos):  #
     global indexRobot
     precisaVoltarAtras = False
     precisaIrEsquerda = False
