@@ -1,9 +1,8 @@
-from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank
-from ev3dev2.sensor import INPUT_1,INPUT_3,INPUT_4
-from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor, GyroSensor
+from ev3dev2.motor import OUTPUT_B, OUTPUT_C, SpeedPercent, MoveTank
+from ev3dev2.sensor.lego import  GyroSensor
 
 ROTACAO = 181
-VELOCIDADE=25
+VELOCIDADE=20
 TAMANHO_QUADRADO = 26
 DISTANCIA_FRENTE = 2.2
 DISTANCIA_RECUAR=0.7
@@ -43,3 +42,4 @@ def backup():
 
 def moveForwardForever():
     tank_drive.on(SpeedPercent(VELOCIDADE), SpeedPercent(VELOCIDADE))
+

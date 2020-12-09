@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, MoveTank
-from ev3dev2.sensor import INPUT_1, INPUT_3, INPUT_4
-from ev3dev2.sensor.lego import TouchSensor, ColorSensor, UltrasonicSensor
+from ev3dev2.motor import OUTPUT_B, OUTPUT_C,  MoveTank
+from ev3dev2.sound import Sound
+from ev3dev2.sensor.lego import  ColorSensor, UltrasonicSensor
 from ev3dev2.button import Button
 import movement
 import os
@@ -32,7 +32,7 @@ ROBOT_ORIENTACOES = NORTE + ESTE + SUL + OESTE
 indexRobotOrientacoes = 0
 indexRobot = 0
 colorSensor = ColorSensor()
-colorSensor.mode = 'COL-AMBIENT'
+colorSensor.mode = 'COL-REFLECT'
 colorSensor.calibrate_white()
 sonic = UltrasonicSensor()
 sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
@@ -85,7 +85,7 @@ def updateBoard(foundWall: bool, foundSheep: bool):
         # A célula acima da atual do robot tem uma parede a sul
         tabuleiro[indexRobot +
                   CIMA][POS_SUL] = (PAREDE if foundWall else SEM_PAREDE)
-        if foundSheep:
+        if foundSheep and tabuleiro[indexRobot+CIMA][POS_OVELHA]!=OVELHA:
             tabuleiro[indexRobot+CIMA][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + CIMA] = "".join(tabuleiro[indexRobot + CIMA])
     elif indexRobotOrientacoes == POS_ESTE:  # Virado para este
@@ -99,7 +99,7 @@ def updateBoard(foundWall: bool, foundSheep: bool):
         tabuleiro[
             indexRobot +
             DIREITA][POS_OESTE] = (PAREDE if foundWall else SEM_PAREDE)  # A célula à direita do robot tem uma parede a oeste
-        if foundSheep:
+        if foundSheep and tabuleiro[indexRobot+DIREITA][POS_OVELHA]!=OVELHA:
             tabuleiro[indexRobot+DIREITA][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot +
                   DIREITA] = "".join(tabuleiro[indexRobot +
@@ -114,7 +114,7 @@ def updateBoard(foundWall: bool, foundSheep: bool):
         # A célula à esquerda do robot tem uma parede a este
         tabuleiro[indexRobot +
                   ESQUERDA][POS_ESTE] = (PAREDE if foundWall else SEM_PAREDE)
-        if foundSheep:
+        if foundSheep and tabuleiro[indexRobot+ESQUERDA][POS_OVELHA]!=OVELHA:
             tabuleiro[indexRobot+ESQUERDA][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + ESQUERDA] = "".join(tabuleiro[indexRobot +
                                                              ESQUERDA])
@@ -127,7 +127,7 @@ def updateBoard(foundWall: bool, foundSheep: bool):
         # A célula acima da atual do robot tem uma parede a norte
         tabuleiro[indexRobot +
                   BAIXO][POS_NORTE] = (PAREDE if foundWall else SEM_PAREDE)
-        if foundSheep:
+        if foundSheep and tabuleiro[indexRobot+BAIXO][POS_OVELHA]!=OVELHA:
             tabuleiro[indexRobot+BAIXO][POS_OVELHA] = OVELHA
         tabuleiro[indexRobot + BAIXO] = "".join(tabuleiro[indexRobot + BAIXO])
 
@@ -163,16 +163,22 @@ def canGoForward(orientacao):
         try:
             ovelhaFrente = list(tabuleiro[indexRobot + CIMA])[4] == "1"
         except:
-            pass
+            ovelhaFrente=False
     elif orientacao == POS_ESTE:
-        ovelhaFrente = list(tabuleiro[indexRobot+DIREITA])[4] == "1"
+        try:
+            ovelhaFrente = list(tabuleiro[indexRobot+DIREITA])[4] == "1"
+        except:
+            ovelhaFrente=False
     elif orientacao == POS_SUL:
         try:
             ovelhaFrente = list(tabuleiro[indexRobot+BAIXO])[4] == "1"
         except:
-            pass
+            ovelhaFrente=False
     else:
-        ovelhaFrente = list(tabuleiro[indexRobot+ESQUERDA])[4] == "1"
+        try:
+            ovelhaFrente = list(tabuleiro[indexRobot+ESQUERDA])[4] == "1"
+        except:
+            ovelhaFrente=False
     return not(list(tabuleiro[indexRobot])[orientacao] == PAREDE or ovelhaFrente)
 
 
@@ -192,12 +198,21 @@ def checkFrontWall():
     while True:
         # debug_print(colorSensor.rgb)
         # detetar verde escuro (parede)
-        if (colorSensor.rgb[0] < 40 and colorSensor.rgb[1] < 90 and colorSensor.rgb[2] < 70):
-            parede = True
-            break
-        # detetar branco (não é parede)
-        elif (colorSensor.rgb[0] > 230 and colorSensor.rgb[1] > 230 and colorSensor.rgb[2] > 230):
-            break
+        try:
+            if (colorSensor.rgb[0] < 40 and colorSensor.rgb[1] < 100 and colorSensor.rgb[2] < 70):
+                
+                parede = True
+                break
+            # detetar branco (não é parede)
+            elif (colorSensor.rgb[0] > 235 and colorSensor.rgb[1] > 235 and colorSensor.rgb[2] > 235):
+                break
+        except:
+            if (colorSensor.rgb[0] < 40 and colorSensor.rgb[1] < 100 and colorSensor.rgb[2] < 70):
+                parede = True
+                break
+            # detetar branco (não é parede)
+            elif (colorSensor.rgb[0] > 235 and colorSensor.rgb[1] > 235 and colorSensor.rgb[2] > 235):
+                break
     movement.backup()
     return parede
 
@@ -228,14 +243,14 @@ def nextSquareToCheck(quadradosDesconhecidos):
                 break
     debug_print(str(precisaVoltarAtras)+" " +
                 str(precisaIrEsquerda)+" "+str(precisaIrDireita))
-    if indexRobot % (TAMANHO_TABULEIRO * 2) > 5:  # está nas linhas 1, 3 ou 5
-        # debug_print("LINHA_IMPAR")
+    if indexRobot % (TAMANHO_TABULEIRO * 2) <= 5:  # está nas linhas 0,2 ou 4
+        # debug_print("LINHA PAR")
         if precisaVoltarAtras:
             if (indexRobot+BAIXO) in quadradosDesconhecidos and canGoForward(POS_SUL):
                 return BAIXO
             else:
-                debug_print(canGoForward(POS_ESTE))
-                debug_print(canGoForward(POS_OESTE))
+                # debug_print(canGoForward(POS_ESTE))
+                # debug_print(canGoForward(POS_OESTE))
                 if precisaIrDireita and (indexRobot + DIREITA) in quadradosDesconhecidos and canGoForward(POS_ESTE):
                     return DIREITA
                 if precisaIrEsquerda and (indexRobot + ESQUERDA) in quadradosDesconhecidos and canGoForward(POS_OESTE):
@@ -252,16 +267,16 @@ def nextSquareToCheck(quadradosDesconhecidos):
                 return DIREITA
             if canGoForward(POS_OESTE):
                 return ESQUERDA
-    else:  # está nas linhas 0, 2 ou 4
-        # debug_print("LINHA PAR")
+    else:  # está nas linhas 1, 3 ou 4
+        # debug_print("LINHA_IMPAR")
         if precisaVoltarAtras:
             if (indexRobot + BAIXO) in quadradosDesconhecidos and canGoForward(POS_SUL):
                 return BAIXO
             else:
-                if precisaIrDireita and (indexRobot + DIREITA) in quadradosDesconhecidos and canGoForward(POS_ESTE):
-                    return DIREITA
                 if precisaIrEsquerda and (indexRobot + ESQUERDA) in quadradosDesconhecidos and canGoForward(POS_OESTE):
                     return ESQUERDA
+                if precisaIrDireita and (indexRobot + DIREITA) in quadradosDesconhecidos and canGoForward(POS_ESTE):
+                    return DIREITA
         else:
             if precisaIrEsquerda and (indexRobot + ESQUERDA) in quadradosDesconhecidos and canGoForward(POS_OESTE):
                 return ESQUERDA
@@ -292,12 +307,13 @@ def printTabuleiro():
         aux = list(tabuleiro[index])
         toPrint.append(str(index) + " N:" + aux[POS_NORTE] + " E:" + aux[POS_ESTE] +
                        " S:" + aux[POS_SUL] + " W:" + aux[POS_OESTE] + " Ovelha:" + aux[POS_OVELHA])
-    debug_print(", ".join(toPrint))
+    debug_print("\n".join(toPrint))
 
 
 def recon():
     global indexRobot, indexRobotOrientacoes
     numeroParedes = 0
+    numeroOvelhas=0
     indexRobot = 0
     # proximoQuadrado =
     quadradosDesconhecidos = []
@@ -329,12 +345,14 @@ def recon():
                 ovelha = checkSheep()
             if parede:
                 numeroParedes += 1
+            if ovelha:
+                numeroOvelhas+=1
             updateBoard(parede, ovelha)
         removeKnownSquares(quadradosDesconhecidos)
-        if (len(quadradosDesconhecidos) == 0):
+        if ((numeroParedes==6 and numeroOvelhas==2) or len(quadradosDesconhecidos)==0):
             break
         proximoIndex = nextSquareToCheck(quadradosDesconhecidos)
-        debug_print(proximoIndex)
+        debug_print(numeroParedes)
         orientacao = indexRobotOrientacoes
         if proximoIndex == BAIXO:
             orientacao = POS_SUL
@@ -362,7 +380,10 @@ def stop():
 btn = Button()
 btn.on_enter = stop
 movement.backup()
+sound=Sound()
+sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
+# sound.beep()
+# movement.scream()
 recon()
 # while True:
-#     checkFrontWall()
 # movement.moveForwardForever()
