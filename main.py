@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-from ev3dev2.motor import OUTPUT_B, OUTPUT_C,  MoveTank
-from ev3dev2.sound import Sound
 from ev3dev2.sensor.lego import  ColorSensor, UltrasonicSensor
 from ev3dev2.button import Button
 import movement
 import os
-import time
 import sys
+import time
 os.system('setfont Lat15-TerminusBold14')
 
 TAMANHO_TABULEIRO = 6
@@ -37,7 +35,6 @@ colorSensor.calibrate_white()
 sonic = UltrasonicSensor()
 sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
 units = sonic.units
-tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 
 
 def debug_print(*args, **kwargs):
@@ -199,20 +196,20 @@ def checkFrontWall(): # verifica se é ou nao parede
         # debug_print(colorSensor.rgb)
         # detetar verde escuro (parede)
         try:
-            if (colorSensor.rgb[0] < 40 and colorSensor.rgb[1] < 100 and colorSensor.rgb[2] < 70):
-                
+            if (colorSensor.rgb[0] < 70 and colorSensor.rgb[1] > 200 and colorSensor.rgb[2] >200):
                 parede = True
                 break
             # detetar branco (não é parede)
-            elif (colorSensor.rgb[0] > 235 and colorSensor.rgb[1] > 235 and colorSensor.rgb[2] > 235):
+            elif (colorSensor.rgb[0] < 80 and colorSensor.rgb[1] < 80 and colorSensor.rgb[2] < 80):
                 break
         except:
-            if (colorSensor.rgb[0] < 40 and colorSensor.rgb[1] < 100 and colorSensor.rgb[2] < 70):
+            if (colorSensor.rgb[0] < 70 and colorSensor.rgb[1] >200 and colorSensor.rgb[2] > 200):
                 parede = True
                 break
             # detetar branco (não é parede)
-            elif (colorSensor.rgb[0] > 235 and colorSensor.rgb[1] > 235 and colorSensor.rgb[2] > 235):
+            elif (colorSensor.rgb[0] < 80 and colorSensor.rgb[1] < 80 and colorSensor.rgb[2] < 80):
                 break
+    movement.stopRobot()
     movement.backup()
     return parede
 
@@ -345,14 +342,21 @@ def recon():
                 ovelha = checkSheep()
             if parede:
                 numeroParedes += 1
-            if ovelha:
-                numeroOvelhas+=1
             updateBoard(parede, ovelha)
         removeKnownSquares(quadradosDesconhecidos)
-        if ((numeroParedes==6 and numeroOvelhas==2) or len(quadradosDesconhecidos)==0):
+        numeroOvelhas=0
+        indexOvelha1=-1
+        indexOvelha2=-1
+        for index in range(len(tabuleiro)):#Contar ovelhas
+            aux=list(tabuleiro[index])
+            if aux[4]=="1":
+                numeroOvelhas+=1
+                if indexOvelha1==-1: indexOvelha1=index
+                else: indexOvelha2=index
+        if ((numeroParedes==6 and numeroOvelhas==2) or len(quadradosDesconhecidos)==0 or (numeroOvelhas==2 and len(quadradosDesconhecidos)==2 and (indexOvelha1+1)==indexOvelha2) ):
             break
         proximoIndex = nextSquareToCheck(quadradosDesconhecidos)
-        debug_print(numeroParedes)
+        debug_print(str(numeroParedes)+" "+str(numeroOvelhas))
         orientacao = indexRobotOrientacoes
         if proximoIndex == BAIXO:
             orientacao = POS_SUL
@@ -372,18 +376,29 @@ def recon():
                 turnRight()
         # debug_print(indexRobotOrientacoes)
         goForward()
-    # if numeroParedes == 5:
+    debug_print(quadradosDesconhecidos)
+    if numeroParedes==6:
+        for quadrado in quadradosDesconhecidos:
+            auxList=list(tabuleiro[quadrado])
+            for index in range(4):
+                if(auxList[index]==DESCONHECIDO):
+                    auxList[index]=SEM_PAREDE
+            tabuleiro[quadrado]="".join(auxList)
+    else:
+        for quadrado in quadradosDesconhecidos:
+            auxList=list(tabuleiro[quadrado])
+            for index in range(4):
+                if(auxList[index]==DESCONHECIDO):
+                    auxList[index]=PAREDE
+            tabuleiro[quadrado]="".join(auxList)
+    printTabuleiro()
 
-def stop():
-    return 1/0
-
-btn = Button()
-btn.on_enter = stop
-movement.backup()
-sound=Sound()
-sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
-# sound.beep()
+# movement.backup()
 # movement.scream()
 recon()
+# movement.turnLeft()
+# time.sleep(1)
+# movement.turnRight()
+# movement.touchSheep()
 # while True:
-# movement.moveForwardForever()
+#     checkSheep()
