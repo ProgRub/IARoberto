@@ -13,6 +13,7 @@ ANGULO_RODAR=175
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 braco=MediumMotor(OUTPUT_D)
 touchSensor=TouchSensor()
+sound=Sound()
 
 
 def turnLeft():
@@ -21,6 +22,10 @@ def turnLeft():
 
 def turnRight():
     tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, ANGULO_RODAR)
+    # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
+
+def do180():
+    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2)+15)
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def forwardOneSquare():
@@ -60,7 +65,9 @@ def touchSheep():
     touchSensor.wait_for_pressed()
     braco.on_for_degrees(VELOCIDADEBRACO,70)
 
-def scream():
-    sound=Sound()
-    sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
+def beep():
     sound.beep()
+
+def scream():
+    sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
+    beep()

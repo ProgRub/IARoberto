@@ -8,6 +8,7 @@ import sys
 import time
 os.system('setfont Lat15-TerminusBold14')
 
+#TODO: guardar último quadrado visitado e verificar que não volta atrás, verificar se está num beco (só pode ir para um lado) e reorganizar a função moveTo
 TAMANHO_TABULEIRO = 6
 DIREITA = 1
 ESQUERDA = -1
@@ -29,6 +30,8 @@ OVELHA = "1"
 ROBOT_ORIENTACOES = NORTE + ESTE + SUL + OESTE
 indexRobotOrientacoes = 0
 indexRobot = 0
+indexOvelha1=-1
+indexOvelha2=-1
 colorSensor = ColorSensor()
 colorSensor.mode = 'COL-REFLECT'
 colorSensor.calibrate_white()
@@ -138,6 +141,11 @@ def turnRight():
     movement.turnRight()
     indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4
 
+def turn180():
+    global indexRobotOrientacoes
+    movement.do180()
+    indexRobotOrientacoes = (indexRobotOrientacoes+2) % 4
+
 # Função que vira o robot para a esquerda e atualiza a orientação do robot
 
 
@@ -237,7 +245,10 @@ def checkFrontWall():
 def checkSheep():
     global sonic
     # debug_print("ULTRASONIC "+str(sonic.value()//10))
-    return (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40
+    if (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40:
+        movement.beep()
+        return True
+    return False
 
 # Função que devolve para que lado o robot deverá ir e pode ir, para reconhecer o tabuleiro
 
@@ -357,6 +368,8 @@ def recon():
                 indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
                 if(indexToLeft == lado):
                     turnLeft()
+                elif(lado%2==indexRobotOrientacoes%2):
+                    turn180()
                 else:
                     turnRight()
             ovelha = checkSheep()
@@ -380,35 +393,37 @@ def recon():
                     indexOvelha2 = index
         if (numeroParedes == 6 and numeroOvelhas==2) or len(quadradosDesconhecidos) == 0 or (numeroOvelhas == 2 and len(quadradosDesconhecidos) == 2 and ((indexOvelha1+DIREITA) == indexOvelha2 or (indexOvelha1+ESQUERDA) == indexOvelha2 or (indexOvelha1+CIMA) == indexOvelha2 or (indexOvelha1+BAIXO) == indexOvelha2)):
             break
-        proximoIndex = nextSquareToCheck(quadradosDesconhecidos,ultimosQuadrados)
-        debug_print(str(numeroParedes)+" "+str(numeroOvelhas))
-        orientacao = indexRobotOrientacoes
-        if proximoIndex == BAIXO:
-            orientacao = POS_SUL
-        elif proximoIndex == DIREITA:
-            orientacao = POS_ESTE
-        elif proximoIndex == ESQUERDA:
-            orientacao = POS_OESTE
-        else:
-            orientacao = POS_NORTE
-        numeroRotacoes=0
-        while numeroRotacoes<4:
-            if indexRobotOrientacoes == orientacao and canGoForward(indexRobotOrientacoes):
-                break
-            indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
-            if(list(tabuleiro[indexRobot])[indexToLeft] == SEM_PAREDE and indexToLeft == orientacao):
-                turnLeft()
-            else:
-                turnRight()
-            numeroRotacoes+=1
+        direcao = nextSquareToCheck(quadradosDesconhecidos,ultimosQuadrados)
+        debug_print(direcao)
+        moveTo(indexRobot+direcao)
+        # debug_print(str(numeroParedes)+" "+str(numeroOvelhas))
+        # orientacao = indexRobotOrientacoes
+        # if proximoIndex == BAIXO:
+        #     orientacao = POS_SUL
+        # elif proximoIndex == DIREITA:
+        #     orientacao = POS_ESTE
+        # elif proximoIndex == ESQUERDA:
+        #     orientacao = POS_OESTE
+        # else:
+        #     orientacao = POS_NORTE
+        # numeroRotacoes=0
+        # while numeroRotacoes<4:
+        #     if indexRobotOrientacoes == orientacao and canGoForward(indexRobotOrientacoes):
+        #         break
+        #     indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
+        #     if(list(tabuleiro[indexRobot])[indexToLeft] == SEM_PAREDE and indexToLeft == orientacao):
+        #         turnLeft()
+        #     else:
+        #         turnRight()
+        #     numeroRotacoes+=1
         ultimosQuadrados=[indexRobot]+ultimosQuadrados[1:]
         # ultimosQuadrados[indexUltimosQuadrados]=indexRobot
         # indexUltimosQuadrados=(indexUltimosQuadrados+1)%4
-        if numeroRotacoes!=4:
-            goForward()
-        debug_print(str(ultimosQuadrados))
-        if numeroRotacoes==4 or (ultimosQuadrados[0]==ultimosQuadrados[2] and ultimosQuadrados[1]==ultimosQuadrados[3]):
-            break
+        # if numeroRotacoes!=4:
+        #     goForward()
+        # debug_print(str(ultimosQuadrados))
+        # if numeroRotacoes==4 or (ultimosQuadrados[0]==ultimosQuadrados[2] and ultimosQuadrados[1]==ultimosQuadrados[3]):
+        #     break
     debug_print(quadradosDesconhecidos)
     if numeroParedes == 6:
         for quadrado in quadradosDesconhecidos:
@@ -502,23 +517,41 @@ def moveTo(indexDestino):
             if canGoForward(POS_SUL):
                 orientacaoDestino= POS_SUL
             else:
-                if canGoForward(POS_ESTE):
-                    orientacaoDestino= POS_ESTE
+                if indexDestino%TAMANHO_TABULEIRO<indexRobot%TAMANHO_TABULEIRO:
+                    if canGoForward(POS_OESTE):
+                        orientacaoDestino= POS_OESTE
+                    elif canGoForward(POS_ESTE) :
+                        orientacaoDestino= POS_ESTE
+                else:
+                    if canGoForward(POS_ESTE):
+                        orientacaoDestino= POS_ESTE
+                    elif canGoForward(POS_OESTE):
+                        orientacaoDestino= POS_OESTE
+        elif indexRobot//TAMANHO_TABULEIRO==indexDestino//TAMANHO_TABULEIRO:
+            if indexDestino%TAMANHO_TABULEIRO<indexRobot%TAMANHO_TABULEIRO:
                 if canGoForward(POS_OESTE):
                     orientacaoDestino= POS_OESTE
-        elif indexRobot//TAMANHO_TABULEIRO==indexDestino//TAMANHO_TABULEIRO:
-            if canGoForward(POS_ESTE):
-                orientacaoDestino= POS_ESTE
-            if canGoForward(POS_OESTE):
-                orientacaoDestino= POS_OESTE
+                elif canGoForward(POS_ESTE) :
+                    orientacaoDestino= POS_ESTE
+            else:
+                if canGoForward(POS_ESTE):
+                    orientacaoDestino= POS_ESTE
+                elif canGoForward(POS_OESTE):
+                    orientacaoDestino= POS_OESTE
         else:
             if canGoForward(POS_NORTE):
                 orientacaoDestino= POS_NORTE
             else:
-                if canGoForward(POS_ESTE):
-                    orientacaoDestino= POS_ESTE
-                if canGoForward(POS_OESTE):
-                    orientacaoDestino= POS_OESTE
+                if indexDestino%TAMANHO_TABULEIRO<indexRobot%TAMANHO_TABULEIRO:
+                    if canGoForward(POS_ESTE) :
+                        orientacaoDestino= POS_ESTE
+                    elif canGoForward(POS_OESTE):
+                        orientacaoDestino= POS_OESTE
+                else:
+                    if canGoForward(POS_OESTE):
+                        orientacaoDestino= POS_OESTE
+                    elif canGoForward(POS_ESTE):
+                        orientacaoDestino= POS_ESTE
         numeroRotacoes=0
         while numeroRotacoes<4:
             if indexRobotOrientacoes == orientacaoDestino and canGoForward(indexRobotOrientacoes):
@@ -526,6 +559,8 @@ def moveTo(indexDestino):
             indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
             if(list(tabuleiro[indexRobot])[indexToLeft] == SEM_PAREDE and indexToLeft == orientacaoDestino):
                 turnLeft()
+            elif(orientacaoDestino%2==indexRobotOrientacoes%2):
+                turn180()
             else:
                 turnRight()
             numeroRotacoes+=1
