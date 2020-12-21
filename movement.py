@@ -25,7 +25,7 @@ def turnRight():
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def do180():
-    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2)+15)
+    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2)+10)
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def forwardOneSquare():
