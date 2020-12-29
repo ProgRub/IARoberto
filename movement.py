@@ -8,7 +8,7 @@ VELOCIDADE=30
 VELOCIDADEBRACO=30
 TAMANHO_QUADRADO = 26
 DISTANCIA_FRENTE = 2.3
-DISTANCIA_RECUAR=0.75
+DISTANCIA_RECUAR=0.78
 ANGULO_RODAR=175
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 braco=MediumMotor(OUTPUT_D)
@@ -69,5 +69,6 @@ def beep():
     sound.beep()
 
 def scream():
-    sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
-    beep()
+    sound.speak("GRITO",espeak_opts='-a 200 -s 130 -v fr')
+    # sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
+    # beep()
