@@ -965,7 +965,7 @@ def AEstrelaOvelhas(indexDestino,indexOvelha):
                 if indexOvelha1==indexOvelha2:
                     relocateSheep(percurso[index],percurso[index+1])
                 for index in range(len(percursoRobotAteQuadradoDesejado)):
-                    percursoRobot.append(possivelIndexRobot)
+                    percursoRobot.append(percursoRobotAteQuadradoDesejado[index])
                 possivelIndexRobot=percursoRobotAteQuadradoDesejado[len(percursoRobotAteQuadradoDesejado)-1]
                 numeroMovimentosRobot=2
             else:
