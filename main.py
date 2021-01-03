@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
-import movement
+# import movement
 import os
 import sys
 import time
@@ -256,7 +256,7 @@ def checkSides():
 
 
 def checkFrontWall():
-    movement.moveForwardForever()
+    # movement.moveForwardForever()
     parede = False
     while True:
         # debug_print(colorSensor.rgb)
@@ -276,8 +276,8 @@ def checkFrontWall():
             # detetar preto (não é parede)
             elif (colorSensor.rgb[0] < 80 and colorSensor.rgb[1] < 80 and colorSensor.rgb[2] < 80):
                 break
-    movement.stopRobot()
-    movement.backup()
+    # movement.stopRobot()
+    # movement.backup()
     return parede
 
 # Função que verifica se há uma ovelha à sua frente
@@ -287,7 +287,7 @@ def checkSheep():
     global sonic
     # debug_print("ULTRASONIC "+str(sonic.value()//10))
     if (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40:
-        movement.beep()
+        # movement.beep()
         return True
     return False
 
@@ -416,7 +416,7 @@ def nextSquareToCheck():
 
 def turnRight():
     global indexRobotOrientacoes
-    movement.turnRight()
+    # movement.turnRight()
     indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4
 
 # Função que vira o robot para trás e atualiza a orientação do robot
@@ -424,7 +424,7 @@ def turnRight():
 
 def turn180():
     global indexRobotOrientacoes
-    movement.do180()
+    # movement.do180()
     indexRobotOrientacoes = (indexRobotOrientacoes+2) % 4
 
 # Função que vira o robot para a esquerda e atualiza a orientação do robot
@@ -432,7 +432,7 @@ def turn180():
 
 def turnLeft():
     global indexRobotOrientacoes
-    movement.turnLeft()
+    # movement.turnLeft()
     indexRobotOrientacoes = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
 
 # Função que movimenta o robot um quadrado para a frente e atualiza indexRobot(varivel global da posicao atual do robot) que é a posicao para que vai se mover no tabuleiro
@@ -448,8 +448,22 @@ def goForward():
         indexRobot += BAIXO
     else:
         indexRobot += ESQUERDA
-    movement.forwardOneSquare()
+    # movement.forwardOneSquare()
 
+def turnTowardsOrientation(orientacaoDestino):
+    global indexRobotOrientacoes,indexRobot
+    numeroRotacoes = 0
+    while numeroRotacoes < 4:
+        if indexRobotOrientacoes == orientacaoDestino and canGoForward(indexRobotOrientacoes, indexRobot):
+            break
+        indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
+        if indexToLeft == orientacaoDestino:
+            turnLeft()
+        elif orientacaoDestino % 2 == indexRobotOrientacoes % 2:
+            turn180()
+        else:
+            turnRight()
+        numeroRotacoes += 1
 
 def moveTo(indexDestino, paraRecon, numeroOvelhas):
     global indexRobot, tabuleiro, ultimoIndexRobot, quadradosDesconhecidos, numeroParedes
@@ -460,95 +474,81 @@ def moveTo(indexDestino, paraRecon, numeroOvelhas):
     # debug_print("Ultimo Index Robot:"+str(ultimoIndexRobot))
     percurso = []
     indexDestinoIntermediario = indexDestino
-    percursoPeloAEstrela = False
+    # percursoPeloAEstrela = False
     haParede = False
-    if paraRecon:
-        while indexRobot != indexDestino:
-            if ((indexRobot+DIREITA) == indexDestino or (indexRobot+ESQUERDA) == indexDestino or (indexRobot+CIMA) == indexDestino or (indexRobot+BAIXO) == indexDestino) or len(percurso) > 1:
-                hasMove = False
-                if len(percurso) > 0:
-                    indexDestinoIntermediario = percurso.pop(0)
-                    debug_print(indexDestinoIntermediario)
-                else:
-                    percursoPeloAEstrela = False
-                if indexRobot in quadradosDesconhecidos:
-                    haParede = checkSides()
-                debug_print("MOVETO " + str(haParede) +
-                            " " + str(percursoPeloAEstrela))
-                if haParede and percursoPeloAEstrela:
-                    debug_print("RECALCULAR")
-                    percurso = []
-                debug_print("Ovelhas e Paredes " +
-                            str(numeroParedes)+" "+str(numeroOvelhas))
-                if (numeroParedes == 6 and numeroOvelhas == 2) or len(quadradosDesconhecidos) == 0 or (len(quadradosDesconhecidos) == 2 and not squaresAreAdjacent(indexOvelha1,indexOvelha2)):
-                    return True
-                if haParede and percursoPeloAEstrela:
-                    debug_print("RECALCULAR")
-                    percurso = AEstrela(indexRobot,indexDestino)
-                haParede = False
-                if indexDestinoIntermediario % TAMANHO_LINHA_TABULEIRO < indexRobot % TAMANHO_LINHA_TABULEIRO:
-                    if canGoForward(POS_OESTE, indexRobot):
-                        orientacaoDestino = POS_OESTE
-                        hasMove = True
-                if indexDestinoIntermediario % TAMANHO_LINHA_TABULEIRO > indexRobot % TAMANHO_LINHA_TABULEIRO and not hasMove:
-                    if canGoForward(POS_ESTE, indexRobot):
-                        orientacaoDestino = POS_ESTE
-                        hasMove = True
-                if indexRobot//TAMANHO_LINHA_TABULEIRO < indexDestinoIntermediario//TAMANHO_LINHA_TABULEIRO and not hasMove:
-                    if canGoForward(POS_NORTE, indexRobot):
-                        orientacaoDestino = POS_NORTE
-                        hasMove = True
-                if indexRobot//TAMANHO_LINHA_TABULEIRO > indexDestinoIntermediario//TAMANHO_LINHA_TABULEIRO and not hasMove:
-                    if canGoForward(POS_SUL, indexRobot):
-                        orientacaoDestino = POS_SUL
-                        hasMove = True
-                if not hasMove:
-                    percursoPeloAEstrela = True
-                    percurso = AEstrela(indexRobot,indexDestino)
-                    continue
-                numeroRotacoes = 0
-                ultimoIndexRobot = indexRobot
-                debug_print("OrientacaoDestino:"+str(orientacaoDestino))
-                while numeroRotacoes < 4:
-                    if indexRobotOrientacoes == orientacaoDestino and canGoForward(indexRobotOrientacoes, indexRobot):
-                        break
-                    indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
-                    if(list(tabuleiro[indexRobot])[indexToLeft] == SEM_PAREDE and indexToLeft == orientacaoDestino):
-                        turnLeft()
-                    elif(orientacaoDestino % 2 == indexRobotOrientacoes % 2):
-                        turn180()
-                    else:
-                        turnRight()
-                    numeroRotacoes += 1
-                goForward()
-            else:
-                percursoPeloAEstrela = True
-                percurso = AEstrela(indexRobot,indexDestino)
-    else:
-        percurso = AEstrela(indexRobot,indexDestino)
-        while indexRobot != indexDestino:
-            indexDestinoIntermediario = percurso.pop(0)
-            if (indexDestinoIntermediario + CIMA) == indexRobot:
-                orientacaoDestino = POS_SUL
-            elif (indexDestinoIntermediario + DIREITA) == indexRobot:
-                orientacaoDestino = POS_OESTE
-            elif (indexDestinoIntermediario + ESQUERDA) == indexRobot:
-                orientacaoDestino = POS_ESTE
-            elif (indexDestinoIntermediario + BAIXO) == indexRobot:
-                orientacaoDestino = POS_NORTE
-            numeroRotacoes = 0
-            while numeroRotacoes < 4:
-                if indexRobotOrientacoes == orientacaoDestino and canGoForward(indexRobotOrientacoes, indexRobot):
-                    break
-                indexToLeft = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
-                if(list(tabuleiro[indexRobot])[indexToLeft] == SEM_PAREDE and indexToLeft == orientacaoDestino):
-                    turnLeft()
-                elif(orientacaoDestino % 2 == indexRobotOrientacoes % 2):
-                    turn180()
-                else:
-                    turnRight()
-                numeroRotacoes += 1
-            goForward()
+    # if paraRecon:
+    #     while indexRobot != indexDestino:
+    #         if ((indexRobot+DIREITA) == indexDestino or (indexRobot+ESQUERDA) == indexDestino or (indexRobot+CIMA) == indexDestino or (indexRobot+BAIXO) == indexDestino) or len(percurso) > 1:
+    #             hasMove = False
+    #             if len(percurso) > 0:
+    #                 indexDestinoIntermediario = percurso.pop(0)
+    #                 debug_print(indexDestinoIntermediario)
+    #             else:
+    #                 percursoPeloAEstrela = False
+    #             if indexRobot in quadradosDesconhecidos:
+    #                 haParede = checkSides()
+    #             debug_print("MOVETO " + str(haParede) +
+    #                         " " + str(percursoPeloAEstrela))
+    #             if haParede and percursoPeloAEstrela:
+    #                 debug_print("RECALCULAR")
+    #                 percurso = []
+    #             debug_print("Ovelhas e Paredes " +
+    #                         str(numeroParedes)+" "+str(numeroOvelhas))
+    #             if (numeroParedes == 6 and numeroOvelhas == 2) or len(quadradosDesconhecidos) == 0 or (len(quadradosDesconhecidos) == 2 and not squaresAreAdjacent(indexOvelha1,indexOvelha2)):
+    #                 return True
+    #             if haParede and percursoPeloAEstrela:
+    #                 debug_print("RECALCULAR")
+    #                 percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
+    #             haParede = False
+    #             if indexDestinoIntermediario % TAMANHO_LINHA_TABULEIRO < indexRobot % TAMANHO_LINHA_TABULEIRO:
+    #                 if canGoForward(POS_OESTE, indexRobot):
+    #                     orientacaoDestino = POS_OESTE
+    #                     hasMove = True
+    #             if indexDestinoIntermediario % TAMANHO_LINHA_TABULEIRO > indexRobot % TAMANHO_LINHA_TABULEIRO and not hasMove:
+    #                 if canGoForward(POS_ESTE, indexRobot):
+    #                     orientacaoDestino = POS_ESTE
+    #                     hasMove = True
+    #             if indexRobot//TAMANHO_LINHA_TABULEIRO < indexDestinoIntermediario//TAMANHO_LINHA_TABULEIRO and not hasMove:
+    #                 if canGoForward(POS_NORTE, indexRobot):
+    #                     orientacaoDestino = POS_NORTE
+    #                     hasMove = True
+    #             if indexRobot//TAMANHO_LINHA_TABULEIRO > indexDestinoIntermediario//TAMANHO_LINHA_TABULEIRO and not hasMove:
+    #                 if canGoForward(POS_SUL, indexRobot):
+    #                     orientacaoDestino = POS_SUL
+    #                     hasMove = True
+    #             if not hasMove:
+    #                 percursoPeloAEstrela = True
+    #                 percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
+    #                 continue
+    #             ultimoIndexRobot = indexRobot
+    #             debug_print("OrientacaoDestino:"+str(orientacaoDestino))
+    #             turnTowardsOrientation(orientacaoDestino)
+    #             goForward()
+    #         else:
+    #             percursoPeloAEstrela = True
+    #             percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
+    # else:
+    percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
+    while indexRobot != indexDestino:
+        if paraRecon:
+            if indexRobot in quadradosDesconhecidos:
+                haParede = checkSides()
+            if (numeroParedes == 6 and numeroOvelhas == 2) or len(quadradosDesconhecidos) == 0 or (len(quadradosDesconhecidos) == 2 and squaresAreAdjacent(indexOvelha1,indexOvelha2)):
+                return True
+            if haParede:
+                debug_print("RECALCULAR PERCURSO")
+                percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
+        indexDestinoIntermediario = percurso.pop(0)
+        if (indexDestinoIntermediario + CIMA) == indexRobot:
+            orientacaoDestino = POS_SUL
+        elif (indexDestinoIntermediario + DIREITA) == indexRobot:
+            orientacaoDestino = POS_OESTE
+        elif (indexDestinoIntermediario + ESQUERDA) == indexRobot:
+            orientacaoDestino = POS_ESTE
+        elif (indexDestinoIntermediario + BAIXO) == indexRobot:
+            orientacaoDestino = POS_NORTE
+        turnTowardsOrientation(orientacaoDestino)
+        goForward()
 
 """
                     AUXILIARY FUNCTIONS
@@ -657,16 +657,20 @@ def printMatrizCusto(matrizCusto):
     debug_print(" ")
 
 
-def AEstrela(indexStart,indexDestino):
+def AEstrela(indexStart,indexDestino,numeroMaximoMovimentos):
     global tabuleiro
     custoMovimentoTabuleiro = [0] * \
         TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
     custoMovimentoTabuleiro[indexStart] = 1
     num = 1
-    while not stepAEstrela(num, custoMovimentoTabuleiro, indexDestino):
+    percursoEncontrado=False
+    while not percursoEncontrado and num<(numeroMaximoMovimentos+1):
         # printMatrizCusto(custoMovimentoTabuleiro)
+        percursoEncontrado=stepAEstrela(num, custoMovimentoTabuleiro, indexDestino)
         num += 1
-    printMatrizCusto(custoMovimentoTabuleiro)
+    # printMatrizCusto(custoMovimentoTabuleiro)
+    if not percursoEncontrado:
+        return []
     percurso = [indexDestino]
     index = indexDestino
     num = custoMovimentoTabuleiro[indexDestino]
@@ -705,15 +709,18 @@ def stepAEstrela(num, custoMovimentoTabuleiro, objetivo):
         if chegouObjetivo:
             break
         if custoMovimentoTabuleiro[index] == num:
-            chegouObjetivo = index == objetivo
             if canGoForward(POS_SUL, index) and (index+BAIXO) > 0 and custoMovimentoTabuleiro[index+BAIXO] == 0:
                 custoMovimentoTabuleiro[index+BAIXO] = num+1
+                chegouObjetivo = (index+BAIXO) == objetivo
             if canGoForward(POS_OESTE, index) and (index+ESQUERDA) > 0 and custoMovimentoTabuleiro[index+ESQUERDA] == 0:
                 custoMovimentoTabuleiro[index+ESQUERDA] = num+1
+                chegouObjetivo = (index+ESQUERDA) == objetivo
             if canGoForward(POS_NORTE, index) and (index+CIMA) < TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO and custoMovimentoTabuleiro[index+CIMA] == 0:
                 custoMovimentoTabuleiro[index+CIMA] = num+1
+                chegouObjetivo = (index+CIMA) == objetivo
             if canGoForward(POS_ESTE, index) and (index+DIREITA) > 0 and custoMovimentoTabuleiro[index+DIREITA] == 0:
                 custoMovimentoTabuleiro[index+DIREITA] = num+1
+                chegouObjetivo = (index+DIREITA) == objetivo
     return chegouObjetivo
 
 
@@ -793,7 +800,7 @@ def relocateSheep(indicePrevio, indiceNovo):
 
 
 def connectSheep():
-    global indexOvelha1, indexOvelha2, indexRobot
+    global indexOvelha1, indexOvelha2, indexRobot,numeroMovimentosRobot
     # determinar ovelha mais perto
     ovelhaMaisPertoE1 = -1
     distanciaOvelha1 = abs(indexRobot % TAMANHO_LINHA_TABULEIRO-indexOvelha1 % TAMANHO_LINHA_TABULEIRO) + \
@@ -806,97 +813,97 @@ def connectSheep():
         ovelhaMaisPertoE1 = False
     else:
         ovelhaMaisPertoE1 = True
-    debug_print(ovelhaMaisPertoE1)
+    # debug_print(ovelhaMaisPertoE1)
     if ovelhaMaisPertoE1:
-        if indexOvelha2 % TAMANHO_LINHA_TABULEIRO > indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
-            moveTo(indexOvelha1+ESQUERDA, False, 2)
-        elif indexOvelha2 % TAMANHO_LINHA_TABULEIRO < indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
-            moveTo(indexOvelha1+DIREITA, False, 2)
-        else:
-            if indexOvelha2//TAMANHO_LINHA_TABULEIRO > indexOvelha1//TAMANHO_LINHA_TABULEIRO:
-                moveTo(indexOvelha1+BAIXO, False, 2)
-            elif indexOvelha2//TAMANHO_LINHA_TABULEIRO < indexOvelha1//TAMANHO_LINHA_TABULEIRO:
-                moveTo(indexOvelha1+CIMA, False, 2)
-        while indexOvelha1 != indexOvelha2:
-            indexFuturo = calculateSheepMovement("S", indexOvelha1,indexRobot)
-            if indexFuturo == indexOvelha2:
-                # debug_print()
-                # debug_print(indexFuturo)
-                # debug_print(indexOvelha1)
-                movement.scream()
-                relocateSheep(indexOvelha1, indexFuturo)
-                indexOvelha1 = indexFuturo
-                # debug_print()
-                # debug_print(indexOvelha1)
-                # debug_print(indexOvelha2)
-            indexFuturo = calculateSheepMovement("T", indexOvelha1,indexRobot)
-            if indexFuturo == indexOvelha2:
-                # debug_print()
-                # debug_print(indexFuturo)
-                # debug_print(indexOvelha1)
-                movement.touchSheep()
-                relocateSheep(indexOvelha1, indexFuturo)
-                indexOvelha1 = indexFuturo
-                # debug_print()
-                # debug_print(indexOvelha1)
-                # debug_print(indexOvelha2)
+        resultadoRaciocinio=AEstrelaOvelhas(indexOvelha2,indexOvelha1)
+        percursoOvelha=resultadoRaciocinio[0]
+        percursoRobot=resultadoRaciocinio[1]
+        # debug_print("Percurso Robot: "+str(percursoRobot))
+        moveTo(percursoRobot,False,2)
+        # if indexOvelha2 % TAMANHO_LINHA_TABULEIRO > indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
+        #     moveTo(indexOvelha1+ESQUERDA, False, 2)
+        # elif indexOvelha2 % TAMANHO_LINHA_TABULEIRO < indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
+        #     moveTo(indexOvelha1+DIREITA, False, 2)
+        # else:
+        #     if indexOvelha2//TAMANHO_LINHA_TABULEIRO > indexOvelha1//TAMANHO_LINHA_TABULEIRO:
+        #         moveTo(indexOvelha1+BAIXO, False, 2)
+        #     elif indexOvelha2//TAMANHO_LINHA_TABULEIRO < indexOvelha1//TAMANHO_LINHA_TABULEIRO:
+        #         moveTo(indexOvelha1+CIMA, False, 2)
+        # while indexOvelha1 != indexOvelha2:
+        #     indexFuturo = calculateSheepMovement("S", indexOvelha1,indexRobot)
+        #     if indexFuturo == indexOvelha2:
+        #         # debug_print()
+        #         # debug_print(indexFuturo)
+        #         # debug_print(indexOvelha1)
+        #         # movement.scream()
+        #         relocateSheep(indexOvelha1, indexFuturo)
+        #         indexOvelha1 = indexFuturo
+        #         # debug_print()
+        #         # debug_print(indexOvelha1)
+        #         # debug_print(indexOvelha2)
+        #     indexFuturo = calculateSheepMovement("T", indexOvelha1,indexRobot)
+        #     if indexFuturo == indexOvelha2:
+        #         # debug_print()
+        #         # debug_print(indexFuturo)
+        #         # debug_print(indexOvelha1)
+        #         # movement.touchSheep()
+        #         relocateSheep(indexOvelha1, indexFuturo)
+        #         indexOvelha1 = indexFuturo
+        #         # debug_print()
+        #         # debug_print(indexOvelha1)
+        #         # debug_print(indexOvelha2)
     else:
-        if indexOvelha2 % TAMANHO_LINHA_TABULEIRO > indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
-            moveTo(indexOvelha2+DIREITA, False, 2)
-        elif indexOvelha2 % TAMANHO_LINHA_TABULEIRO < indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
-            moveTo(indexOvelha2+ESQUERDA, False, 2)
-        else:
-            if indexOvelha2//TAMANHO_LINHA_TABULEIRO > indexOvelha1//TAMANHO_LINHA_TABULEIRO:
-                moveTo(indexOvelha2+CIMA, False, 2)
-            elif indexOvelha2//TAMANHO_LINHA_TABULEIRO < indexOvelha1//TAMANHO_LINHA_TABULEIRO:
-                moveTo(indexOvelha2+BAIXO, False, 2)
-        while indexOvelha1 != indexOvelha2:
-            indexFuturo = calculateSheepMovement("S", indexOvelha2,indexRobot)
-            if indexFuturo == indexOvelha1:
-                # debug_print()
-                # debug_print(indexFuturo)
-                # debug_print(indexOvelha2)
-                movement.scream()
-                relocateSheep(indexOvelha2, indexFuturo)
-                indexOvelha2 = indexFuturo
-                # debug_print()
-                # debug_print(indexOvelha1)
-                # debug_print(indexOvelha2)
-            indexFuturo = calculateSheepMovement("T", indexOvelha2,indexRobot)
-            if indexFuturo == indexOvelha1:
-                # debug_print()
-                # debug_print(indexFuturo)
-                # debug_print(indexOvelha2)
-                movement.touchSheep()
-                relocateSheep(indexOvelha2, indexFuturo)
-                indexOvelha2 = indexFuturo
-                # debug_print()
-                # debug_print(indexOvelha1)
-                # debug_print(indexOvelha2)
+        resultadoRaciocinio=AEstrelaOvelhas(indexOvelha1,indexOvelha2)
+        percursoOvelha=resultadoRaciocinio[0]
+        percursoRobot=resultadoRaciocinio[1]
+        # debug_print("Percurso Robot: "+str(percursoRobot))
+        moveTo(percursoRobot[len(percursoRobot)-1],False,2)
+        # if indexOvelha2 % TAMANHO_LINHA_TABULEIRO > indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
+        #     moveTo(indexOvelha2+DIREITA, False, 2)
+        # elif indexOvelha2 % TAMANHO_LINHA_TABULEIRO < indexOvelha1 % TAMANHO_LINHA_TABULEIRO:
+        #     moveTo(indexOvelha2+ESQUERDA, False, 2)
+        # else:
+        #     if indexOvelha2//TAMANHO_LINHA_TABULEIRO > indexOvelha1//TAMANHO_LINHA_TABULEIRO:
+        #         moveTo(indexOvelha2+CIMA, False, 2)
+        #     elif indexOvelha2//TAMANHO_LINHA_TABULEIRO < indexOvelha1//TAMANHO_LINHA_TABULEIRO:
+        #         moveTo(indexOvelha2+BAIXO, False, 2)
+        # while indexOvelha1 != indexOvelha2:
+        #     indexFuturo = calculateSheepMovement("S", indexOvelha2,indexRobot)
+        #     if indexFuturo == indexOvelha1:
+        #         # debug_print()
+        #         # debug_print(indexFuturo)
+        #         # debug_print(indexOvelha2)
+        #         # movement.scream()
+        #         relocateSheep(indexOvelha2, indexFuturo)
+        #         indexOvelha2 = indexFuturo
+        #         # debug_print()
+        #         # debug_print(indexOvelha1)
+        #         # debug_print(indexOvelha2)
+        #     indexFuturo = calculateSheepMovement("T", indexOvelha2,indexRobot)
+        #     if indexFuturo == indexOvelha1:
+        #         # debug_print()
+        #         # debug_print(indexFuturo)
+        #         # debug_print(indexOvelha2)
+        #         # movement.touchSheep()
+        #         relocateSheep(indexOvelha2, indexFuturo)
+        #         indexOvelha2 = indexFuturo
+        #         # debug_print()
+        #         # debug_print(indexOvelha1)
+        #         # debug_print(indexOvelha2)
 
 
-def AEstrelaOvelhas():
+def AEstrelaOvelhas(indexDestino,indexOvelha):
     # as ovelhas estão juntas, os indíces são iguais
-    global tabuleiro, indexRobot, indexOvelha1,numeroMovimentosRobot
+    global tabuleiro, indexRobot, indexOvelha1,indexOvelha2,numeroMovimentosRobot
     custoMovimentoTabuleiro = [0] * TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
     while True:
-        for index in range(len(tabuleiro)):
-            if index==indexOvelha1:
-                aux = list(tabuleiro[index])
-                aux[4] = str(2)
-                tabuleiro[index] = "".join(aux)
-            else:
-                aux = list(tabuleiro[index])
-                aux[4] = str(0)
-                tabuleiro[index] = "".join(aux)
-        indexStart = indexOvelha1
+        indexStart = indexOvelha
         custoMovimentoTabuleiro[indexStart] = 1
         num = 1
-        indexDestino = 35
         while not stepAEstrelaOvelhas(num, custoMovimentoTabuleiro, indexDestino):
             # printMatrizCusto(custoMovimentoTabuleiro)
             num += 1
-        printMatrizCusto(custoMovimentoTabuleiro)
+        # printMatrizCusto(custoMovimentoTabuleiro)
         percurso = [indexDestino]
         index = indexDestino
         num = custoMovimentoTabuleiro[indexDestino]
@@ -926,69 +933,123 @@ def AEstrelaOvelhas():
         percurso.reverse()
         # percurso.pop(0)
         debug_print(percurso)
-        percursoValido=True
+        percursoValido=False
         possivelIndexRobot=indexRobot
         proximoIndexRobot=possivelIndexRobot
-        proximoIndexOvelha=-1
-        atualIndexOvelha=-1
-        for index in range(len(percurso)):
-            #PROBLEMA É ESTES IFS e ELIFS
-            if index==len(percurso)-1:
-                break
-            if percurso[index+1]-percurso[index]==CIMA: #se a ovelha tem que ir para cima
-                if calculateSheepMovement("S",percurso[index],percurso[index]+ESQUERDA)==percurso[index+1]:
+        percursoRobot=[possivelIndexRobot]
+        for index in range(len(percurso)-1):
+            percursoValido=False
+            if calculateSheepMovement("S",percurso[index],percurso[index]+ESQUERDA)==percurso[index+1]:
+                percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,percurso[index]+ESQUERDA,numeroMovimentosRobot)
+                if len(percursoRobotAteQuadradoDesejado)!=0:
+                    percursoValido=True
                     proximoIndexRobot=percurso[index]+ESQUERDA
-                elif calculateSheepMovement("S",percurso[index],percurso[index]+DIREITA)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+ESQUERDA
-                else:
-                    proximoIndexRobot=percurso[index]+BAIXO
-            elif percurso[index+1]-percurso[index]==BAIXO: #se a ovelha tem que ir para baixo
-                if calculateSheepMovement("S",percurso[index],percurso[index]+ESQUERDA)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+ESQUERDA
-                elif calculateSheepMovement("S",percurso[index],percurso[index]+DIREITA)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+ESQUERDA
-                else:
-                    proximoIndexRobot=percurso[index]+CIMA
-            elif percurso[index+1]-percurso[index]==DIREITA: #se a ovelha tem que ir para direita
-                if calculateSheepMovement("S",percurso[index],percurso[index]+BAIXO)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+BAIXO
-                elif calculateSheepMovement("S",percurso[index],percurso[index]+CIMA)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+CIMA
-                else:
-                    proximoIndexRobot=percurso[index]+ESQUERDA
-            elif percurso[index+1]-percurso[index]==ESQUERDA: #se a ovelha tem que ir para esquerda
-                if calculateSheepMovement("S",percurso[index],percurso[index]+BAIXO)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+BAIXO
-                elif calculateSheepMovement("S",percurso[index],percurso[index]+CIMA)==percurso[index+1]:
-                    proximoIndexRobot=percurso[index]+CIMA
-                else:
+            if calculateSheepMovement("S",percurso[index],percurso[index]+DIREITA)==percurso[index+1] and not percursoValido:
+                percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,percurso[index]+DIREITA,numeroMovimentosRobot)
+                if len(percursoRobotAteQuadradoDesejado)!=0:
+                    percursoValido=True
                     proximoIndexRobot=percurso[index]+DIREITA
+            if calculateSheepMovement("S",percurso[index],percurso[index]+BAIXO)==percurso[index+1] and not percursoValido:
+                percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,percurso[index]+BAIXO,numeroMovimentosRobot)
+                if len(percursoRobotAteQuadradoDesejado)!=0:
+                    percursoValido=True
+                    proximoIndexRobot=percurso[index]+BAIXO
+            if calculateSheepMovement("S",percurso[index],percurso[index]+CIMA)==percurso[index+1] and not percursoValido:
+                percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,percurso[index]+CIMA,numeroMovimentosRobot)
+                if len(percursoRobotAteQuadradoDesejado)!=0:
+                    percursoValido=True
+                    proximoIndexRobot=percurso[index]+CIMA
+            if percursoValido:
+                percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,proximoIndexRobot,numeroMovimentosRobot)
+                relocateSheep(percurso[index],percurso[index+1])
+                if indexOvelha1==indexOvelha2:
+                    relocateSheep(percurso[index],percurso[index+1])
+                for index in range(len(percursoRobotAteQuadradoDesejado)):
+                    percursoRobot.append(possivelIndexRobot)
+                possivelIndexRobot=percursoRobotAteQuadradoDesejado[len(percursoRobotAteQuadradoDesejado)-1]
+                numeroMovimentosRobot=2
+            else:
+                for indexCost in range(len(custoMovimentoTabuleiro)):
+                    if custoMovimentoTabuleiro[indexCost]!=-1:
+                        custoMovimentoTabuleiro[indexCost]=0
+                # custoMovimentoTabuleiro=[0]*TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
+                custoMovimentoTabuleiro[percurso[index+1]]=-1
+                break
+            # if percurso[index+1]-percurso[index]==CIMA: #se a ovelha tem que ir para cima
+            #     if calculateSheepMovement("S",percurso[index],percurso[index]+ESQUERDA)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+ESQUERDA
+            #     elif calculateSheepMovement("S",percurso[index],percurso[index]+DIREITA)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+ESQUERDA
+            #     else:
+            #         proximoIndexRobot=percurso[index]+BAIXO
+            # elif percurso[index+1]-percurso[index]==BAIXO: #se a ovelha tem que ir para baixo
+            #     if calculateSheepMovement("S",percurso[index],percurso[index]+ESQUERDA)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+ESQUERDA
+            #     elif calculateSheepMovement("S",percurso[index],percurso[index]+DIREITA)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+ESQUERDA
+            #     else:
+            #         proximoIndexRobot=percurso[index]+CIMA
+            # elif percurso[index+1]-percurso[index]==DIREITA: #se a ovelha tem que ir para direita
+            #     if calculateSheepMovement("S",percurso[index],percurso[index]+BAIXO)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+BAIXO
+            #     elif calculateSheepMovement("S",percurso[index],percurso[index]+CIMA)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+CIMA
+            #     else:
+            #         proximoIndexRobot=percurso[index]+ESQUERDA
+            # elif percurso[index+1]-percurso[index]==ESQUERDA: #se a ovelha tem que ir para esquerda
+            #     if calculateSheepMovement("S",percurso[index],percurso[index]+BAIXO)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+BAIXO
+            #     elif calculateSheepMovement("S",percurso[index],percurso[index]+CIMA)==percurso[index+1]:
+            #         proximoIndexRobot=percurso[index]+CIMA
+            #     else:
+            #         proximoIndexRobot=percurso[index]+DIREITA
             debug_print("Próximo index da ovelha se robot estiver à esquerda: "+str(calculateSheepMovement("S",percurso[index],percurso[index]+ESQUERDA)))
             debug_print("Próximo index da ovelha se robot estiver à direita: "+str(calculateSheepMovement("S",percurso[index],percurso[index]+DIREITA)))
             debug_print("Próximo index da ovelha se robot estiver abaixo: "+str(calculateSheepMovement("S",percurso[index],percurso[index]+BAIXO)))
             debug_print("Próximo index da ovelha se robot estiver acima: "+str(calculateSheepMovement("S",percurso[index],percurso[index]+CIMA)))
             debug_print("Proximo index Robot: "+str(proximoIndexRobot))
             debug_print("Index (Possivel) do Robot: "+str(possivelIndexRobot))
-            percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,proximoIndexRobot)
-            if len(percursoRobotAteQuadradoDesejado)>numeroMovimentosRobot:
-                for indexCost in range(len(custoMovimentoTabuleiro)):
-                    if custoMovimentoTabuleiro[indexCost]!=-1:
-                        custoMovimentoTabuleiro[indexCost]=0
-                # custoMovimentoTabuleiro=[0]*TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
-                custoMovimentoTabuleiro[percurso[index+1]]=-1
-                percursoValido=False
-                break
-            else:
-                # debug_print("INDEX "+ str(index))
-                relocateSheep(percurso[index],percurso[index+1])
-                relocateSheep(percurso[index],percurso[index+1])
-                # indexOvelha1=percurso[index+1]
-                possivelIndexRobot=percursoRobotAteQuadradoDesejado[len(percursoRobotAteQuadradoDesejado)-1]
-            numeroMovimentosRobot=2
+            # percursoRobotAteQuadradoDesejado=AEstrela(possivelIndexRobot,proximoIndexRobot,15)
+            # if len(percursoRobotAteQuadradoDesejado)>numeroMovimentosRobot:
+            #     for indexCost in range(len(custoMovimentoTabuleiro)):
+            #         if custoMovimentoTabuleiro[indexCost]!=-1:
+            #             custoMovimentoTabuleiro[indexCost]=0
+            #     # custoMovimentoTabuleiro=[0]*TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
+            #     custoMovimentoTabuleiro[percurso[index+1]]=-1
+            #     percursoValido=False
+            #     break
+            # else:
+            #     # debug_print("INDEX "+ str(index))
+            #     relocateSheep(percurso[index],percurso[index+1])
+            #     relocateSheep(percurso[index],percurso[index+1])
+            #     # indexOvelha1=percurso[index+1]
+            #     possivelIndexRobot=percursoRobotAteQuadradoDesejado[len(percursoRobotAteQuadradoDesejado)-1]
+            #     percursoRobot.append(possivelIndexRobot)
+            # numeroMovimentosRobot=2
         if percursoValido:
             break
         debug_print(" ")
-    return percurso
+        if indexOvelha2==indexOvelha1:
+            for index in range(len(tabuleiro)):
+                if index==indexOvelha1:
+                    aux = list(tabuleiro[index])
+                    aux[4] = str(2)
+                    tabuleiro[index] = "".join(aux)
+                else:
+                    aux = list(tabuleiro[index])
+                    aux[4] = str(0)
+                    tabuleiro[index] = "".join(aux)
+        else:
+            for index in range(len(tabuleiro)):
+                if index==indexOvelha:
+                    aux = list(tabuleiro[index])
+                    aux[4] = str(1)
+                    tabuleiro[index] = "".join(aux)
+                elif index!=indexOvelha1 and index!=indexOvelha2:
+                    aux = list(tabuleiro[index])
+                    aux[4] = str(0)
+                    tabuleiro[index] = "".join(aux)
+    return percurso,percursoRobot
 
 
 def stepAEstrelaOvelhas(num, custoMovimentoTabuleiro, objetivo):
@@ -1011,15 +1072,20 @@ def stepAEstrelaOvelhas(num, custoMovimentoTabuleiro, objetivo):
 
 
 def playGame():
-    global indexOvelha1, indexOvelha2, tabuleiro,numeroMovimentosRobot
+    global indexOvelha1, indexOvelha2, tabuleiro,numeroMovimentosRobot,indexRobot
+    numeroMovimentosRobot=36
     connectSheep()
-    numeroMovimentosRobot-=1
-    percurso=AEstrelaOvelhas()
+    indexRobot=12
+    numeroMovimentosRobot=1
+    resultadoRaciocinio=AEstrelaOvelhas(35,indexOvelha1)
+    percurso=resultadoRaciocinio[0]
+    percursoRobot=resultadoRaciocinio[1]
     debug_print("Percurso Valido: "+str(percurso))
+    debug_print("Percurso Robot: "+str(percursoRobot))
     # debug_print(tabuleiro)
     # moveTo(indexOvelha1+DIREITA,False,2)
     # indexOvelha1=calculateSheepMovement("S",indexOvelha1)
-    # movement.scream()
+    # # movement.scream()
     # debug_print("HERE0")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
@@ -1029,7 +1095,7 @@ def playGame():
     # debug_print("HERE1")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # movement.touchSheep()
+    # # movement.touchSheep()
     # moveTo(indexOvelha1+BAIXO,False,2)
     # turnRight()
     # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
@@ -1037,21 +1103,21 @@ def playGame():
     # debug_print("HERE2")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # movement.touchSheep()
+    # # movement.touchSheep()
     # moveTo(indexOvelha1+BAIXO,False,2)
     # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
     # indexOvelha2=calculateSheepMovement("T",indexOvelha2)
     # debug_print("HERE3")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # movement.touchSheep()
+    # # movement.touchSheep()
     # moveTo(indexOvelha1+ESQUERDA,False,2)
     # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
     # indexOvelha2=calculateSheepMovement("T",indexOvelha2)
     # debug_print("HERE4")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # movement.touchSheep()
+    # # movement.touchSheep()
     # moveTo(indexOvelha1+ESQUERDA,False,2)
     # # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
     # # indexOvelha2=calculateSheepMovement("T",indexOvelha2)
@@ -1064,14 +1130,14 @@ def playGame():
     # indexOvelha2=calculateSheepMovement("S",indexOvelha2)
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # movement.scream()
+    # # movement.scream()
 
 
-# movement.backup()
-# movement.scream()
+# # movement.backup()
+# # movement.scream()
 fillStartingBoard()
 # recon()
-# movement.scream()
+# # movement.scream()
 indexOvelha1 = 14
 indexOvelha2 = 13
 aux = list(tabuleiro[indexOvelha1])
@@ -1092,9 +1158,9 @@ aux[POS_ESTE] = PAREDE
 tabuleiro[28] = "".join(aux)
 # debug_print(indexOvelha1+DIREITA)
 playGame()
-# movement.turnLeft()
+# # movement.turnLeft()
 # time.sleep(1)
-# movement.turnRight()
-# movement.touchSheep()
+# # movement.turnRight()
+# # movement.touchSheep()
 # while True:
 #     checkSheep()
