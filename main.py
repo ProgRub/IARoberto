@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
-# import movement
+from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
+import movement
 import os
 import sys
 import time
@@ -27,12 +27,12 @@ indexRobot = 0
 ultimoIndexRobot = -15
 indexOvelha1 = -15
 indexOvelha2 = -15
-# colorSensor = ColorSensor()
-# colorSensor.mode = 'COL-REFLECT'
-# colorSensor.calibrate_white()
-# sonic = UltrasonicSensor()
-# sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
-# units = sonic.units
+colorSensor = ColorSensor()
+colorSensor.mode = 'COL-REFLECT'
+colorSensor.calibrate_white()
+sonic = UltrasonicSensor()
+sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
+units = sonic.units
 numeroParedes = 0
 numeroMovimentosRobot=2
 tabuleiro = []
@@ -256,7 +256,7 @@ def checkSides():
 
 
 def checkFrontWall():
-    # movement.moveForwardForever()
+    movement.moveForwardForever()
     parede = False
     while True:
         # debug_print(colorSensor.rgb)
@@ -276,8 +276,8 @@ def checkFrontWall():
             # detetar preto (não é parede)
             elif (colorSensor.rgb[0] < 80 and colorSensor.rgb[1] < 80 and colorSensor.rgb[2] < 80):
                 break
-    # movement.stopRobot()
-    # movement.backup()
+    movement.stopRobot()
+    movement.backup()
     return parede
 
 # Função que verifica se há uma ovelha à sua frente
@@ -287,7 +287,7 @@ def checkSheep():
     global sonic
     # debug_print("ULTRASONIC "+str(sonic.value()//10))
     if (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40:
-        # movement.beep()
+        movement.beep()
         return True
     return False
 
@@ -416,7 +416,7 @@ def nextSquareToCheck():
 
 def turnRight():
     global indexRobotOrientacoes
-    # movement.turnRight()
+    movement.turnRight()
     indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4
 
 # Função que vira o robot para trás e atualiza a orientação do robot
@@ -424,7 +424,7 @@ def turnRight():
 
 def turn180():
     global indexRobotOrientacoes
-    # movement.do180()
+    movement.do180()
     indexRobotOrientacoes = (indexRobotOrientacoes+2) % 4
 
 # Função que vira o robot para a esquerda e atualiza a orientação do robot
@@ -432,7 +432,7 @@ def turn180():
 
 def turnLeft():
     global indexRobotOrientacoes
-    # movement.turnLeft()
+    movement.turnLeft()
     indexRobotOrientacoes = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
 
 # Função que movimenta o robot um quadrado para a frente e atualiza indexRobot(varivel global da posicao atual do robot) que é a posicao para que vai se mover no tabuleiro
@@ -448,7 +448,7 @@ def goForward():
         indexRobot += BAIXO
     else:
         indexRobot += ESQUERDA
-    # movement.forwardOneSquare()
+    movement.forwardOneSquare()
 
 def turnTowardsOrientation(orientacaoDestino):
     global indexRobotOrientacoes,indexRobot
@@ -835,7 +835,7 @@ def connectSheep():
         #         # debug_print()
         #         # debug_print(indexFuturo)
         #         # debug_print(indexOvelha1)
-        #         # movement.scream()
+        #         movement.scream()
         #         relocateSheep(indexOvelha1, indexFuturo)
         #         indexOvelha1 = indexFuturo
         #         # debug_print()
@@ -846,7 +846,7 @@ def connectSheep():
         #         # debug_print()
         #         # debug_print(indexFuturo)
         #         # debug_print(indexOvelha1)
-        #         # movement.touchSheep()
+        #         movement.touchSheep()
         #         relocateSheep(indexOvelha1, indexFuturo)
         #         indexOvelha1 = indexFuturo
         #         # debug_print()
@@ -873,7 +873,7 @@ def connectSheep():
         #         # debug_print()
         #         # debug_print(indexFuturo)
         #         # debug_print(indexOvelha2)
-        #         # movement.scream()
+        #         movement.scream()
         #         relocateSheep(indexOvelha2, indexFuturo)
         #         indexOvelha2 = indexFuturo
         #         # debug_print()
@@ -884,7 +884,7 @@ def connectSheep():
         #         # debug_print()
         #         # debug_print(indexFuturo)
         #         # debug_print(indexOvelha2)
-        #         # movement.touchSheep()
+        #         movement.touchSheep()
         #         relocateSheep(indexOvelha2, indexFuturo)
         #         indexOvelha2 = indexFuturo
         #         # debug_print()
@@ -1085,7 +1085,7 @@ def playGame():
     # debug_print(tabuleiro)
     # moveTo(indexOvelha1+DIREITA,False,2)
     # indexOvelha1=calculateSheepMovement("S",indexOvelha1)
-    # # movement.scream()
+    # movement.scream()
     # debug_print("HERE0")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
@@ -1095,7 +1095,7 @@ def playGame():
     # debug_print("HERE1")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # # movement.touchSheep()
+    # movement.touchSheep()
     # moveTo(indexOvelha1+BAIXO,False,2)
     # turnRight()
     # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
@@ -1103,21 +1103,21 @@ def playGame():
     # debug_print("HERE2")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # # movement.touchSheep()
+    # movement.touchSheep()
     # moveTo(indexOvelha1+BAIXO,False,2)
     # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
     # indexOvelha2=calculateSheepMovement("T",indexOvelha2)
     # debug_print("HERE3")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # # movement.touchSheep()
+    # movement.touchSheep()
     # moveTo(indexOvelha1+ESQUERDA,False,2)
     # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
     # indexOvelha2=calculateSheepMovement("T",indexOvelha2)
     # debug_print("HERE4")
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # # movement.touchSheep()
+    # movement.touchSheep()
     # moveTo(indexOvelha1+ESQUERDA,False,2)
     # # indexOvelha1=calculateSheepMovement("T",indexOvelha1)
     # # indexOvelha2=calculateSheepMovement("T",indexOvelha2)
@@ -1130,14 +1130,14 @@ def playGame():
     # indexOvelha2=calculateSheepMovement("S",indexOvelha2)
     # debug_print("Index Ovelha 1 "+str(indexOvelha1))
     # debug_print("Index Ovelha 2 "+str(indexOvelha2))
-    # # movement.scream()
+    # movement.scream()
 
 
-# # movement.backup()
-# # movement.scream()
+# movement.backup()
+# movement.scream()
 fillStartingBoard()
 # recon()
-# # movement.scream()
+# movement.scream()
 indexOvelha1 = 14
 indexOvelha2 = 13
 aux = list(tabuleiro[indexOvelha1])
@@ -1158,9 +1158,9 @@ aux[POS_ESTE] = PAREDE
 tabuleiro[28] = "".join(aux)
 # debug_print(indexOvelha1+DIREITA)
 playGame()
-# # movement.turnLeft()
+# movement.turnLeft()
 # time.sleep(1)
-# # movement.turnRight()
-# # movement.touchSheep()
+# movement.turnRight()
+# movement.touchSheep()
 # while True:
 #     checkSheep()
