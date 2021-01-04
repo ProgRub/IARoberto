@@ -472,7 +472,6 @@ def moveTo(indexDestino, paraRecon, numeroOvelhas):
     # debug_print("Index Robot:"+str(indexRobot))
     # debug_print(isBeco())
     # debug_print("Ultimo Index Robot:"+str(ultimoIndexRobot))
-    percurso = []
     indexDestinoIntermediario = indexDestino
     # percursoPeloAEstrela = False
     haParede = False
@@ -711,16 +710,16 @@ def stepAEstrela(num, custoMovimentoTabuleiro, objetivo):
         if custoMovimentoTabuleiro[index] == num:
             if canGoForward(POS_SUL, index) and (index+BAIXO) > 0 and custoMovimentoTabuleiro[index+BAIXO] == 0:
                 custoMovimentoTabuleiro[index+BAIXO] = num+1
-                chegouObjetivo = (index+BAIXO) == objetivo
+                chegouObjetivo = chegouObjetivo or (index+BAIXO) == objetivo
             if canGoForward(POS_OESTE, index) and (index+ESQUERDA) > 0 and custoMovimentoTabuleiro[index+ESQUERDA] == 0:
                 custoMovimentoTabuleiro[index+ESQUERDA] = num+1
-                chegouObjetivo = (index+ESQUERDA) == objetivo
+                chegouObjetivo = chegouObjetivo or (index+ESQUERDA) == objetivo
             if canGoForward(POS_NORTE, index) and (index+CIMA) < TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO and custoMovimentoTabuleiro[index+CIMA] == 0:
                 custoMovimentoTabuleiro[index+CIMA] = num+1
-                chegouObjetivo = (index+CIMA) == objetivo
+                chegouObjetivo = chegouObjetivo or (index+CIMA) == objetivo
             if canGoForward(POS_ESTE, index) and (index+DIREITA) > 0 and custoMovimentoTabuleiro[index+DIREITA] == 0:
                 custoMovimentoTabuleiro[index+DIREITA] = num+1
-                chegouObjetivo = (index+DIREITA) == objetivo
+                chegouObjetivo = chegouObjetivo or (index+DIREITA) == objetivo
     return chegouObjetivo
 
 
@@ -1071,15 +1070,18 @@ def stepAEstrelaOvelhas(num, custoMovimentoTabuleiro, objetivo):
         if chegouObjetivo:
             break
         if custoMovimentoTabuleiro[index] == num:
-            chegouObjetivo = index == objetivo
             if sheepCanGoForward(POS_SUL, index,indexRobot) and (index+BAIXO) > 0 and custoMovimentoTabuleiro[index+BAIXO] == 0:
                 custoMovimentoTabuleiro[index+BAIXO] = num+1
+                chegouObjetivo = chegouObjetivo or (index+BAIXO) == objetivo
             if sheepCanGoForward(POS_OESTE, index,indexRobot) and (index+ESQUERDA) > 0 and custoMovimentoTabuleiro[index+ESQUERDA] == 0:
                 custoMovimentoTabuleiro[index+ESQUERDA] = num+1
+                chegouObjetivo = chegouObjetivo or (index+ESQUERDA) == objetivo
             if sheepCanGoForward(POS_NORTE, index,indexRobot) and (index+CIMA) < TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO and custoMovimentoTabuleiro[index+CIMA] == 0:
                 custoMovimentoTabuleiro[index+CIMA] = num+1
+                chegouObjetivo = chegouObjetivo or (index+CIMA) == objetivo
             if sheepCanGoForward(POS_ESTE, index,indexRobot) and (index+DIREITA) < TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO and custoMovimentoTabuleiro[index+DIREITA] == 0:
                 custoMovimentoTabuleiro[index+DIREITA] = num+1
+                chegouObjetivo = chegouObjetivo or (index+DIREITA) == objetivo
     return chegouObjetivo
 
 
