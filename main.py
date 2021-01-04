@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
+from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 import movement
 import os
 import sys
@@ -977,7 +977,7 @@ def AEstrelaOvelhas(indexDestino,indexOvelha):
                 if indexOvelha1==indexOvelha2:
                     relocateSheep(percurso[index],percurso[index+1])
                 for index in range(len(percursoRobotAteQuadradoDesejado)):
-                    percursoRobot.append(possivelIndexRobot)
+                    percursoRobot.append(percursoRobotAteQuadradoDesejado[index])
                 possivelIndexRobot=percursoRobotAteQuadradoDesejado[len(percursoRobotAteQuadradoDesejado)-1]
                 numeroMovimentosRobot=2
             else:
