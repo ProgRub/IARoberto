@@ -705,8 +705,6 @@ def AEstrela(indexStart,indexDestino,numeroMaximoMovimentos):
 def stepAEstrela(num, custoMovimentoTabuleiro, objetivo):
     chegouObjetivo = False
     for index in range(len(custoMovimentoTabuleiro)):
-        if chegouObjetivo:
-            break
         if custoMovimentoTabuleiro[index] == num:
             if canGoForward(POS_SUL, index) and (index+BAIXO) > 0 and custoMovimentoTabuleiro[index+BAIXO] == 0:
                 custoMovimentoTabuleiro[index+BAIXO] = num+1
@@ -720,6 +718,8 @@ def stepAEstrela(num, custoMovimentoTabuleiro, objetivo):
             if canGoForward(POS_ESTE, index) and (index+DIREITA) > 0 and custoMovimentoTabuleiro[index+DIREITA] == 0:
                 custoMovimentoTabuleiro[index+DIREITA] = num+1
                 chegouObjetivo = chegouObjetivo or (index+DIREITA) == objetivo
+        if chegouObjetivo:
+            break
     return chegouObjetivo
 
 
@@ -1067,8 +1067,6 @@ def stepAEstrelaOvelhas(num, custoMovimentoTabuleiro, objetivo):
     global indexRobot
     chegouObjetivo = False
     for index in range(len(custoMovimentoTabuleiro)):
-        if chegouObjetivo:
-            break
         if custoMovimentoTabuleiro[index] == num:
             if sheepCanGoForward(POS_SUL, index,indexRobot) and (index+BAIXO) > 0 and custoMovimentoTabuleiro[index+BAIXO] == 0:
                 custoMovimentoTabuleiro[index+BAIXO] = num+1
@@ -1082,6 +1080,8 @@ def stepAEstrelaOvelhas(num, custoMovimentoTabuleiro, objetivo):
             if sheepCanGoForward(POS_ESTE, index,indexRobot) and (index+DIREITA) < TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO and custoMovimentoTabuleiro[index+DIREITA] == 0:
                 custoMovimentoTabuleiro[index+DIREITA] = num+1
                 chegouObjetivo = chegouObjetivo or (index+DIREITA) == objetivo
+        if chegouObjetivo:
+            break
     return chegouObjetivo
 
 
