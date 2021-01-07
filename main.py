@@ -281,42 +281,42 @@ def nextSquareToCheck():
     if indexRobot % (TAMANHO_LINHA_TABULEIRO * 2) <= 5:  # está nas linhas 0,2 ou 4
         if precisaIrDireita:
             for index in range((indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO):
-                debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
-                    canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
+                # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
+                #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
                 if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_ESTE, index+ESQUERDA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
                     return index
         if precisaIrEsquerda:
             # debug_print(range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1))
             for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1):
-                debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
-                    canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
+                # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
+                #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
                 if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_OESTE, index+DIREITA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
                     return index
         if canGoForward(POS_NORTE, indexRobot):
             return indexRobot+CIMA
         for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+2)*TAMANHO_LINHA_TABULEIRO-1, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, -1):
-            debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
-                canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
+            # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
+            #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
             if index in quadradosDesconhecidos and canGoForward(POS_NORTE, index+BAIXO):
                 return index
     else:
         if precisaIrEsquerda:
             for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1):
-                debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
-                    canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
+                # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
+                #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
                 if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_OESTE, index+DIREITA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
                     return index
         if precisaIrDireita:
             for index in range((indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO):
-                debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
-                    canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
+                # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
+                #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
                 if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_ESTE, index+ESQUERDA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
                     return index
         if canGoForward(POS_NORTE, indexRobot):
             return indexRobot+CIMA
         for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+2)*TAMANHO_LINHA_TABULEIRO):
-            debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
-                canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
+            # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
+            #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
             if index in quadradosDesconhecidos and canGoForward(POS_NORTE, index+BAIXO):
                 return index
 
@@ -456,7 +456,7 @@ def recon():
         fimRecon = moveTo(indexDestino, True, numeroOvelhas)
         if fimRecon:
             break
-    debug_print(quadradosDesconhecidos)
+    # debug_print(quadradosDesconhecidos)
     if numeroParedes == 6:
         if squaresAreAdjacent(indexOvelha1,indexOvelha2):
             debug_print("Ovelha 1: "+str(indexOvelha1))
@@ -471,12 +471,12 @@ def recon():
                 if(auxList[index] == PAREDE):
                     auxList[index] = SEM_PAREDE
             tabuleiro[indexOvelha2] = "".join(auxList)
-        for quadrado in quadradosDesconhecidos:
-            auxList = list(tabuleiro[quadrado])
+        for indexQuadrado in quadradosDesconhecidos:
+            auxList = list(tabuleiro[indexQuadrado])
             for index in range(4):
                 if(auxList[index] == DESCONHECIDO):
                     auxList[index] = SEM_PAREDE
-            tabuleiro[quadrado] = "".join(auxList)
+            tabuleiro[indexQuadrado] = "".join(auxList)
         # numeroOvelhas = 0
         # for index in range(len(tabuleiro)):  # Contar ovelhas
         #     aux = list(tabuleiro[index])
