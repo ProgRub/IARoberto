@@ -1,6 +1,6 @@
 import time
 from ev3dev2.motor import OUTPUT_B, OUTPUT_C,OUTPUT_D, SpeedPercent, MoveTank,MediumMotor
-from ev3dev2.sensor.lego import  GyroSensor, TouchSensor
+from ev3dev2.sensor.lego import TouchSensor, UltrasonicSensor
 from ev3dev2.sound import Sound
 
 ROTACAO = 181
@@ -14,6 +14,8 @@ tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 braco=MediumMotor(OUTPUT_D)
 touchSensor=TouchSensor()
 sound=Sound()
+sonic = UltrasonicSensor()
+sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
 
 
 def turnLeft():
@@ -25,7 +27,7 @@ def turnRight():
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def do180():
-    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2)+10)
+    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2)+5)
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def forwardOneSquare():
@@ -61,6 +63,10 @@ def swingArmUp():
     braco.on_for_seconds(VELOCIDADE,1)
 
 def touchSheep():
+    moveForwardForever()
+    while not (sonic.value() // 10)<14:
+        print(sonic.value())
+    tank_drive.stop()
     braco.on(-VELOCIDADEBRACO)
     touchSensor.wait_for_pressed()
     braco.on_for_degrees(VELOCIDADEBRACO,70)
