@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
+from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
 import movement
 import os
 import sys
@@ -938,46 +938,46 @@ def playGame():
         moveSheepTo(indexOvelha2,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO-1,1)
 
 fillStartingBoard()
-# recon()
-indexRobot=0
-indexOvelha1 = 16
-indexOvelha2 = 13
-aux = list(tabuleiro[indexOvelha1])
-aux[4] = "1"
-tabuleiro[indexOvelha1] = "".join(aux)
-aux = list(tabuleiro[indexOvelha2])
-aux[4] = "1"
-tabuleiro[indexOvelha2] = "".join(aux)
-aux = list(tabuleiro[0])
-aux[POS_ESTE] = PAREDE
-tabuleiro[0] = "".join(aux)
-aux = list(tabuleiro[1])
-aux[POS_OESTE] = PAREDE
-tabuleiro[1] = "".join(aux)
-aux = list(tabuleiro[13])
-aux[POS_NORTE] = PAREDE
-aux[POS_ESTE] = PAREDE
-tabuleiro[13] = "".join(aux)
-aux = list(tabuleiro[16])
-aux[POS_SUL] = PAREDE
-aux[POS_OESTE] = PAREDE
-tabuleiro[16] = "".join(aux)
-aux = list(tabuleiro[10])
-aux[POS_NORTE] = PAREDE
-aux[POS_ESTE] = PAREDE
-tabuleiro[10] = "".join(aux)
-aux = list(tabuleiro[11])
-aux[POS_OESTE] = PAREDE
-tabuleiro[11] = "".join(aux)
-aux = list(tabuleiro[15])
-aux[POS_ESTE] = PAREDE
-tabuleiro[15] = "".join(aux)
-aux = list(tabuleiro[14])
-aux[POS_OESTE] = PAREDE
-tabuleiro[14] = "".join(aux)
-aux = list(tabuleiro[19])
-aux[POS_SUL] = PAREDE
-tabuleiro[19] = "".join(aux)
+recon()
+#indexRobot=0
+#indexOvelha1 = 16
+#indexOvelha2 = 13
+#aux = list(tabuleiro[indexOvelha1])
+#aux[4] = "1"
+#vtabuleiro[indexOvelha1] = "".join(aux)
+#aux = list(tabuleiro[indexOvelha2])
+#aux[4] = "1"
+#tabuleiro[indexOvelha2] = "".join(aux)
+#aux = list(tabuleiro[0])
+#aux[POS_ESTE] = PAREDE
+#tabuleiro[0] = "".join(aux)
+#aux = list(tabuleiro[1])
+#aux[POS_OESTE] = PAREDE
+#tabuleiro[1] = "".join(aux)
+#aux = list(tabuleiro[13])
+#aux[POS_NORTE] = PAREDE
+#aux[POS_ESTE] = PAREDE
+#tabuleiro[13] = "".join(aux)
+#aux = list(tabuleiro[16])
+#aux[POS_SUL] = PAREDE
+#aux[POS_OESTE] = PAREDE
+#tabuleiro[16] = "".join(aux)
+# aux = list(tabuleiro[10])
+# aux[POS_NORTE] = PAREDE
+# aux[POS_ESTE] = PAREDE
+# tabuleiro[10] = "".join(aux)
+# aux = list(tabuleiro[11])
+# aux[POS_OESTE] = PAREDE
+# tabuleiro[11] = "".join(aux)
+# aux = list(tabuleiro[15])
+# aux[POS_ESTE] = PAREDE
+# tabuleiro[15] = "".join(aux)
+# aux = list(tabuleiro[14])
+# aux[POS_OESTE] = PAREDE
+# tabuleiro[14] = "".join(aux)
+# aux = list(tabuleiro[19])
+# aux[POS_SUL] = PAREDE
+# tabuleiro[19] = "".join(aux)
 # for index in range(len(tabuleiro)):
 #     aux=list(tabuleiro[index])
 #     for index in range(len(aux)-1):

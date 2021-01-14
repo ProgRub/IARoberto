@@ -65,11 +65,13 @@ def swingArmUp():
 def touchSheep():
     moveForwardForever()
     while not (sonic.value() // 10)<14:
-        print(sonic.value())
+        # print(sonic.value())
+        pass
     tank_drive.stop()
     braco.on(-VELOCIDADEBRACO)
     touchSensor.wait_for_pressed()
     braco.on_for_degrees(VELOCIDADEBRACO,70)
+    backup()
 
 def beep():
     sound.beep()
