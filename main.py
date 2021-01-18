@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
-# import movement
+from ev3dev2.sensor.lego import ColorSensor, UltrasonicSensor
+import movement
 import os
 import sys
 import time
@@ -26,12 +26,12 @@ indexRobotOrientacoes = 0
 indexRobot = 0
 indexOvelha1 = -15
 indexOvelha2 = -15
-# colorSensor = ColorSensor()
-# colorSensor.mode = 'COL-REFLECT'
-# colorSensor.calibrate_white()
-# sonic = UltrasonicSensor()
-# sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
-# units = sonic.units
+colorSensor = ColorSensor()
+colorSensor.mode = 'COL-REFLECT'
+colorSensor.calibrate_white()
+sonic = UltrasonicSensor()
+sonic.mode = UltrasonicSensor.MODE_US_DIST_CM
+units = sonic.units
 numeroParedes = 0
 numeroMovimentosRobot=2
 tabuleiro = []
@@ -235,7 +235,7 @@ def checkSides():
 
 # Função que verifica se tem parede à frente ou não
 def checkFrontWall():
-    # movement.moveForwardForever()
+    movement.moveForwardForever()
     parede = False
     while True:
         # debug_print(colorSensor.rgb)
@@ -255,8 +255,8 @@ def checkFrontWall():
             # detetar preto (não é parede)
             elif (colorSensor.rgb[0] < 80 and colorSensor.rgb[1] < 80 and colorSensor.rgb[2] < 80):
                 break
-    # movement.stopRobot()
-    # movement.backup()
+    movement.stopRobot()
+    movement.backup()
     return parede
 
 # Função que verifica se há uma ovelha à sua frente
@@ -264,7 +264,7 @@ def checkSheep():
     global sonic
     # debug_print("ULTRASONIC "+str(sonic.value()//10))
     if (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40:
-        # movement.beep()
+        movement.beep()
         return True
     return False
 
@@ -332,19 +332,19 @@ def nextSquareToCheck():
 # Função que vira o robot para a direita e atualiza a orientação do robot
 def turnRight():
     global indexRobotOrientacoes
-    # movement.turnRight()
+    movement.turnRight()
     indexRobotOrientacoes = (indexRobotOrientacoes+1) % 4
 
 # Função que vira o robot para trás e atualiza a orientação do robot
 def turn180():
     global indexRobotOrientacoes
-    # movement.do180()
+    movement.do180()
     indexRobotOrientacoes = (indexRobotOrientacoes+2) % 4
 
 # Função que vira o robot para a esquerda e atualiza a orientação do robot
 def turnLeft():
     global indexRobotOrientacoes
-    # movement.turnLeft()
+    movement.turnLeft()
     indexRobotOrientacoes = 3 if indexRobotOrientacoes == 0 else indexRobotOrientacoes - 1
 
 # Função que movimenta o robot um quadrado para a frente e atualiza indexRobot(varivel global da posicao atual do robot) que é a posicao para que vai se mover no tabuleiro
@@ -358,7 +358,7 @@ def goForward():
         indexRobot += BAIXO
     else:
         indexRobot += ESQUERDA
-    # movement.forwardOneSquare()
+    movement.forwardOneSquare()
 
 #Função que roda o robot para a orientação destino passada como parâmetro
 def turnTowardsOrientation(orientacaoDestino):
@@ -719,7 +719,7 @@ def moveSheepTo(indexStart,indexDestino,numeroOvelhas):
                 else:
                     # debug_print("BAIXO")
                     turnTowardsOrientation(POS_SUL)
-                # movement.touchSheep()
+                movement.touchSheep()
                 relocateSheep(percursoOvelha[indexPercursoOvelha],percursoOvelha[indexPercursoOvelha+2],numeroOvelhas)
                 indexPercursoOvelha+=2
                 try:
@@ -727,7 +727,7 @@ def moveSheepTo(indexStart,indexDestino,numeroOvelhas):
                 except:
                     index=100
             else:
-                # movement.scream()
+                movement.scream()
                 relocateSheep(percursoOvelha[indexPercursoOvelha],percursoOvelha[indexPercursoOvelha+1],numeroOvelhas)
                 indexPercursoOvelha+=1
                 try:
@@ -1015,16 +1015,16 @@ tabuleiro[22] = "".join(aux)
 #         if aux[index]==DESCONHECIDO:
 #             aux[index]=SEM_PAREDE
 #     tabuleiro[index]="".join(aux)
-# # movement.scream()
+# movement.scream()
 curral=list(tabuleiro[len(tabuleiro)-1])
 if curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE:
-    # # movement.admitDefeat()
+    # movement.admitDefeat()
     pass
 else:
     playGame()
-# # movement.turnLeft()
+# movement.turnLeft()
 # time.sleep(1)
-# # movement.turnRight()
-# # movement.touchSheep()
+# movement.turnRight()
+# movement.touchSheep()
 # while True:
 #     checkSheep()
