@@ -7,7 +7,7 @@ ROTACAO = 181
 VELOCIDADE=30
 VELOCIDADEBRACO=30
 TAMANHO_QUADRADO = 26
-DISTANCIA_FRENTE = 2.3
+DISTANCIA_FRENTE = 2.4
 DISTANCIA_RECUAR=0.78
 ANGULO_RODAR=175
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
@@ -27,7 +27,7 @@ def turnRight():
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def do180():
-    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2)+5)
+    tank_drive.on_for_degrees(VELOCIDADE, -VELOCIDADE, (ANGULO_RODAR*2))
     # tank_drive.turn_degrees(VELOCIDADE,ANGULO_RODAR)
 
 def forwardOneSquare():
@@ -77,6 +77,7 @@ def beep():
     sound.beep()
 
 def scream():
-    sound.speak("GRITO",espeak_opts='-a 200 -s 130 -v fr')
-    # sound.play_file('/home/robot/IARoberto/sounds/scream.wav')
-    # beep()
+    sound.play_file('/home/robot/sounds/scream.wav')
+
+def admitDefeat():
+    sound.speak("Sou um falhanço",espeak_opts='-a 200 -s 130 -v pt')
