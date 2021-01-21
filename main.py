@@ -222,6 +222,12 @@ def checkSides():
         ovelha = checkSheep()
         if numeroParedes<6:
             parede = checkFrontWall()
+        else:
+            aux=list(tabuleiro[indexRobot])
+            for index in range(len(aux)-1):
+                if aux[index]==DESCONHECIDO:
+                    aux[index]=SEM_PAREDE
+            tabuleiro[indexRobot]="".join(aux)
         if not ovelha:
             ovelha = checkSheep()
         if parede:
