@@ -8,9 +8,11 @@ VELOCIDADE=30
 VELOCIDADEBRACO=30
 TAMANHO_QUADRADO = 26
 DISTANCIA_FRENTE = 2.4
-DISTANCIA_RECUAR=0.78
+DISTANCIA_RECUAR=0.82
 ANGULO_RODAR=175
+SLEEP_TIME=0.25
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
+# tank_drive.COMMAND_STOP=MoveTank.STOP_ACTION_HOLD
 braco=MediumMotor(OUTPUT_D)
 touchSensor=TouchSensor()
 sound=Sound()
@@ -32,29 +34,19 @@ def do180():
 
 def forwardOneSquare():
     tank_drive.on_for_rotations(VELOCIDADE, VELOCIDADE, DISTANCIA_FRENTE)
-
-def backOneSquare():
-    tank_drive.on_for_rotations(VELOCIDADE, -VELOCIDADE, DISTANCIA_FRENTE)
-
-def leftOneSquare():
-    turnLeft()
-    forwardOneSquare()
-
-def rightOneSquare():
-    turnRight()
-    forwardOneSquare()
+    time.sleep(SLEEP_TIME)
 
 def backup():
-    tank_drive.stop()
+    tank_drive.off()
     tank_drive.on_for_rotations(-VELOCIDADE, -VELOCIDADE, DISTANCIA_RECUAR)
-    tank_drive.stop()
+    tank_drive.off()
 
 def moveForwardForever():
     tank_drive.on(VELOCIDADE, VELOCIDADE)
 
 def stopRobot():
     tank_drive.off(brake=True)
-    time.sleep(0.2)
+    time.sleep(SLEEP_TIME)
 
 def swingArmDown():
     braco.on_for_seconds(-VELOCIDADE,1)
@@ -80,4 +72,4 @@ def scream():
     sound.play_file('/home/robot/sounds/scream.wav')
 
 def admitDefeat():
-    sound.speak("Sou um falhanço",espeak_opts='-a 200 -s 130 -v pt')
+    sound.speak("Sou um falhanco",espeak_opts='-a 200 -s 130 -v pt')
