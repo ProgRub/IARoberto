@@ -689,6 +689,15 @@ def calculateSheepMovement(tipoAcao, indexOvelha,indexRobot):
             #     movimentos += 1
         indexAnteriorOvelha=indexOvelha
         tentarOutraVez=True
+        posicaoRobotRelativoOvelha=-1
+        if indexRobot+DIREITA == indexOvelha:#robot está à esquerda da ovelha
+            posicaoRobotRelativoOvelha=0
+        elif indexRobot+BAIXO == indexOvelha: #robot está acima da ovelha
+            posicaoRobotRelativoOvelha=1
+        elif indexRobot+ESQUERDA == indexOvelha: #robot está acima da ovelha
+            posicaoRobotRelativoOvelha=2
+        else: #robot está acima da ovelha
+            posicaoRobotRelativoOvelha=3
         while movimentos < numeroMovimentos:
             # debug_print(str(indexAnteriorOvelha)+" "+str(indexOvelha))
             if indexAnteriorOvelha!=indexOvelha:
@@ -707,7 +716,7 @@ def calculateSheepMovement(tipoAcao, indexOvelha,indexRobot):
                     tentarOutraVez=False
             if indexAnteriorOvelha==indexOvelha or tentarOutraVez:
                 # debug_print("IGUAL")
-                if indexRobot+DIREITA == indexOvelha:#robot está à esquerda da ovelha
+                if posicaoRobotRelativoOvelha==0:#robot está à esquerda da ovelha
                     if sheepCanGoForward(POS_ESTE, indexOvelha) and indexOvelha+DIREITA!=indexRobot:
                         indexOvelha += DIREITA
                     elif sheepCanGoForward(POS_SUL, indexOvelha) and indexOvelha+BAIXO!=indexRobot:
@@ -716,7 +725,7 @@ def calculateSheepMovement(tipoAcao, indexOvelha,indexRobot):
                         indexOvelha += ESQUERDA
                     elif sheepCanGoForward(POS_NORTE, indexOvelha)and indexOvelha+CIMA!=indexRobot:
                         indexOvelha += CIMA
-                elif indexRobot+BAIXO == indexOvelha: #robot está acima da ovelha
+                elif posicaoRobotRelativoOvelha==1: #robot está acima da ovelha
                     if sheepCanGoForward(POS_SUL, indexOvelha) and indexOvelha+BAIXO!=indexRobot:
                         indexOvelha += BAIXO
                     elif sheepCanGoForward(POS_OESTE, indexOvelha)and indexOvelha+ESQUERDA!=indexRobot:
@@ -725,7 +734,7 @@ def calculateSheepMovement(tipoAcao, indexOvelha,indexRobot):
                         indexOvelha += CIMA
                     elif sheepCanGoForward(POS_ESTE, indexOvelha) and indexOvelha+DIREITA!=indexRobot:
                         indexOvelha += DIREITA
-                elif indexRobot+ESQUERDA == indexOvelha: #robot está à direita da ovelha
+                elif posicaoRobotRelativoOvelha==2: #robot está à direita da ovelha
                     if sheepCanGoForward(POS_OESTE, indexOvelha)and indexOvelha+ESQUERDA!=indexRobot:
                         indexOvelha += ESQUERDA
                     elif sheepCanGoForward(POS_NORTE, indexOvelha)and indexOvelha+CIMA!=indexRobot:
