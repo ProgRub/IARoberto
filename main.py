@@ -831,8 +831,8 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
     proximoIndexRobot=possivelIndexRobot
     percursoRobot=[possivelIndexRobot]
     copiaTabuleiro=tabuleiro.copy()
-    nivelRecursivo+=1
     for index in range(len(percursoOvelha)-1):
+        nivelRecursivo+=1
         chegouSolucao=False
         # printTabuleiro()
         possiveisProximosIndexesRobot=[]
@@ -889,41 +889,50 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
                 else:
                     # debug_print("HERE")
                     # printMatrizCusto(resultado[1])
-                    debug_print("HERE1")
-                    printMatrizCusto(custoMovimentoTabuleiro)
-                    # custoMovimentoTabuleiro=copiaCustoTabuleiro.copy()
+                    # printMatrizCusto(custoMovimentoTabuleiro)
+                    custoMovimentoTabuleiro=copiaCustoTabuleiro.copy()
                     # custoMovimentoTabuleiro[resultado[1].index(-1)]=-1
-                    posicoesInvalidas.append(resultado[1].index(-1))
+                    posicoesInvalidas.append(resultado[3])
                     niveisFalhancos.append(resultado[2])
-                    debug_print("HERE2")
+                    # debug_print("HERE2")
                     # debug_print(resultado[1].index(-1))
                     # printMatrizCusto(custoMovimentoTabuleiro)
                     # printMatrizCusto(custoMovimentoTabuleiro)
                     tabuleiro=copiaTabuleiro.copy()
             if not chegouSolucao:
                 tabuleiro=copiaTabuleiro.copy()
+                custoMovimentoTabuleiro=copiaCustoTabuleiro.copy()
+                debug_print("Solucao recursiva nao encontrada!")
+                debug_print(niveisFalhancos)
+                debug_print(posicoesInvalidas)
                 # custoMovimentoTabuleiro=resultado[1].copy()
                 maxNiveisRecursivos=max(niveisFalhancos)
-                indexPosicaoInvalida=niveisFalhancos.index(maxNiveisRecursivos)
+                indexPosicaoInvalida=posicoesInvalidas[niveisFalhancos.index(maxNiveisRecursivos)]
                 custoMovimentoTabuleiro[indexPosicaoInvalida]=-1
                 for indexCost in range(len(custoMovimentoTabuleiro)):
                     if custoMovimentoTabuleiro[indexCost]!=-1:
                         custoMovimentoTabuleiro[indexCost]=0
                 # custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
                 # printMatrizCusto(custoMovimentoTabuleiro)
-                return [False,custoMovimentoTabuleiro,nivelRecursivo]
+                return [False,custoMovimentoTabuleiro,nivelRecursivo,indexPosicaoInvalida]
         else:
             tabuleiro=copiaTabuleiro.copy()
             for indexCost in range(len(custoMovimentoTabuleiro)):
                 if custoMovimentoTabuleiro[indexCost]!=-1:
                     custoMovimentoTabuleiro[indexCost]=0
             custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
-            debug_print("HERE")
-            printMatrizCusto(custoMovimentoTabuleiro)
-            return [False,custoMovimentoTabuleiro,nivelRecursivo]
+            # if nivelRecursivo==3:
+            #     debug_print("HERE")
+            #     debug_print(percursoOvelha)
+            #     debug_print(index)
+            #     debug_print(percursoOvelha[index+1])
+            #     printMatrizCusto(custoMovimentoTabuleiro)
+            # debug_print("HERE")
+            # printMatrizCusto(custoMovimentoTabuleiro)
+            return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index+1]]
         if chegouSolucao:
             break
-    return [True,percursoRobot,nivelRecursivo]
+    return [True,percursoRobot,nivelRecursivo,-1]
 
 
 #Função que faz a busca A* do indexOvelha para indexDestino e retorna o percurso gerado. Este percurso está definido de modo a que o robot nunca "perca as ovelhas",isto é, as ovelhas não fazem movimentos aleatórios
@@ -1064,6 +1073,7 @@ def playGame():
                 consegue=moveSheepTo(indexOvelha2,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO-1,1)
             if not consegue:
                 movement.admitDefeat()
+                pass
         else:
             debug_print("Ovelha mais longe e 1")
             consegue=moveSheepTo(indexOvelha2,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO-1,1)
@@ -1073,37 +1083,40 @@ def playGame():
                 consegue=moveSheepTo(indexOvelha1,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO-1,1)
             if not consegue:
                 movement.admitDefeat()
+                pass
 
 fillStartingBoard()
-terminouRecon=recon()
-# indexRobot=0
-# indexOvelha1 = 6
-# indexOvelha2 = 30
-# aux = list(tabuleiro[indexOvelha1])
-# aux[4] = "1"
-# tabuleiro[indexOvelha1] = "".join(aux)
-# aux = list(tabuleiro[indexOvelha2])
-# aux[4] = "1"
-# tabuleiro[indexOvelha2] = "".join(aux)
-# aux = list(tabuleiro[32])
-# aux[POS_OESTE] = PAREDE
-# tabuleiro[32] = "".join(aux)
-# aux = list(tabuleiro[26])
-# aux[POS_OESTE] = PAREDE
-# tabuleiro[26] = "".join(aux)
-# aux = list(tabuleiro[20])
-# aux[POS_OESTE] = PAREDE
-# tabuleiro[20] = "".join(aux)
-# aux = list(tabuleiro[31])
-# aux[POS_ESTE] = PAREDE
-# tabuleiro[31] = "".join(aux)
-# aux = list(tabuleiro[25])
-# aux[POS_ESTE] = PAREDE
-# tabuleiro[25] = "".join(aux)
-# aux = list(tabuleiro[19])
-# aux[POS_SUL] = PAREDE
-# aux[POS_ESTE] = PAREDE
-# tabuleiro[19] = "".join(aux)
+# terminouRecon=recon()
+indexRobot=0
+indexOvelha1 = 16
+indexOvelha2 = 19
+aux = list(tabuleiro[indexOvelha1])
+aux[4] = "1"
+tabuleiro[indexOvelha1] = "".join(aux)
+aux = list(tabuleiro[indexOvelha2])
+aux[4] = "1"
+tabuleiro[indexOvelha2] = "".join(aux)
+aux = list(tabuleiro[32])
+aux[POS_OESTE] = PAREDE
+tabuleiro[32] = "".join(aux)
+aux = list(tabuleiro[26])
+aux[POS_OESTE] = PAREDE
+tabuleiro[26] = "".join(aux)
+aux = list(tabuleiro[20])
+aux[POS_OESTE] = PAREDE
+tabuleiro[20] = "".join(aux)
+aux = list(tabuleiro[31])
+aux[POS_ESTE] = PAREDE
+tabuleiro[31] = "".join(aux)
+aux = list(tabuleiro[25])
+aux[POS_ESTE] = PAREDE
+aux[POS_SUL] = PAREDE
+tabuleiro[25] = "".join(aux)
+aux = list(tabuleiro[19])
+aux[POS_SUL] = PAREDE
+aux[POS_NORTE] = PAREDE
+aux[POS_ESTE] = PAREDE
+tabuleiro[19] = "".join(aux)
 # aux = list(tabuleiro[29])
 # aux[POS_SUL] = PAREDE
 # tabuleiro[29] = "".join(aux)
@@ -1113,12 +1126,12 @@ terminouRecon=recon()
 # aux = list(tabuleiro[13])
 # aux[POS_NORTE] = PAREDE
 # tabuleiro[13] = "".join(aux)
-# aux = list(tabuleiro[23])
-# aux[POS_NORTE] = PAREDE
-# tabuleiro[23] = "".join(aux)
-# aux = list(tabuleiro[22])
-# aux[POS_NORTE] = PAREDE
-# tabuleiro[22] = "".join(aux)
+aux = list(tabuleiro[23])
+aux[POS_SUL] = PAREDE
+tabuleiro[23] = "".join(aux)
+aux = list(tabuleiro[17])
+aux[POS_NORTE] = PAREDE
+tabuleiro[17] = "".join(aux)
 # for index in range(len(tabuleiro)):
 #     aux=list(tabuleiro[index])
 #     for index in range(len(aux)-1):
@@ -1127,9 +1140,9 @@ terminouRecon=recon()
 #     tabuleiro[index]="".join(aux)
 # movement.scream()
 curral=list(tabuleiro[len(tabuleiro)-1])
-if (curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE) or not terminouRecon:
+if (curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE) or not True:
     movement.admitDefeat()
-    # pass
+    pass
 else:
     playGame()
 # movement.turnLeft()
