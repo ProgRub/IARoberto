@@ -949,7 +949,14 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
             for indexCost in range(len(custoMovimentoTabuleiro)):
                 if custoMovimentoTabuleiro[indexCost]!=-1:
                     custoMovimentoTabuleiro[indexCost]=0
-            custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
+            if(index+1)==(len(percursoOvelha)-1):
+                custoMovimentoTabuleiro[percursoOvelha[index]]=-1
+                printMatrizCusto(custoMovimentoTabuleiro)
+                return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index]]
+            else:
+                custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
+                printMatrizCusto(custoMovimentoTabuleiro)
+                return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index+1]]
             # if nivelRecursivo==3:
             #     debug_print("HERE")
             #     debug_print(percursoOvelha)
@@ -958,7 +965,6 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
             #     printMatrizCusto(custoMovimentoTabuleiro)
             # debug_print("HERE")
             # printMatrizCusto(custoMovimentoTabuleiro)
-            return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index+1]]
         if chegouSolucao:
             break
     return [True,percursoRobot,nivelRecursivo,-1]
