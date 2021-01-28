@@ -321,42 +321,45 @@ def nextSquareToCheck():
             for index in range((indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO):
                 # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_ESTE, index+ESQUERDA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if precisaIrEsquerda:
             # debug_print(range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1))
             for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1):
                 # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_OESTE, index+DIREITA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if canGoForward(POS_NORTE, indexRobot):
             return indexRobot+CIMA
         for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+2)*TAMANHO_LINHA_TABULEIRO-1, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, -1):
             # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
             #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-            if index in quadradosDesconhecidos and canGoForward(POS_NORTE, index+BAIXO):
+            if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                 return index
     else:
         if precisaIrEsquerda:
             for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1):
                 # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_OESTE, index+DIREITA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if precisaIrDireita:
             for index in range((indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO):
                 # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_ESTE, index+ESQUERDA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if canGoForward(POS_NORTE, indexRobot):
             return indexRobot+CIMA
         for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+2)*TAMANHO_LINHA_TABULEIRO):
             # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
             #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-            if index in quadradosDesconhecidos and canGoForward(POS_NORTE, index+BAIXO):
+            if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                 return index
+    for index in quadradosDesconhecidos:
+        if AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
+            return index
 
 
 """
