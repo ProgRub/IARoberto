@@ -800,7 +800,7 @@ def relocateSheep(indicePrevio, indiceNovo,numeroOvelhas):
 def moveSheepTo(indexStart,indexDestino,numeroOvelhas):
     global tabuleiro,numeroMovimentosRobot
     copiaTabuleiro=tabuleiro.copy()
-    resultadoRaciocinio=AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas)
+    resultadoRaciocinio=AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas,numeroMovimentosRobot)
     tabuleiro=copiaTabuleiro.copy()
     if resultadoRaciocinio==[]:
         return False
@@ -965,7 +965,7 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
 
 
 #Função que faz a busca A* do indexOvelha para indexDestino e retorna o percurso gerado. Este percurso está definido de modo a que o robot nunca "perca as ovelhas",isto é, as ovelhas não fazem movimentos aleatórios
-def AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas):
+def AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas,resetNumeroMovimentosRobot):
     global tabuleiro, indexRobot, indexOvelha1,indexOvelha2,numeroMovimentosRobot
     custoMovimentoTabuleiro = [0] * TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
     while True:
@@ -1004,7 +1004,7 @@ def AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas):
         percurso.reverse()
         # percurso.pop(0)
         debug_print(percurso)
-        numeroMovimentosRobot=TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
+        numeroMovimentosRobot=resetNumeroMovimentosRobot
         resultado=percursoValido(percurso,custoMovimentoTabuleiro,numeroOvelhas,indexRobot,0)
         if resultado[0]:
             percursoRobot=resultado[1][1:]
@@ -1169,7 +1169,7 @@ terminouRecon=recon()
 #     tabuleiro[index]="".join(aux)
 # movement.scream()
 curral=list(tabuleiro[len(tabuleiro)-1])
-if (curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE) or not True:
+if (curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE) or not terminouRecon:
     movement.admitDefeat()
     pass
 else:
