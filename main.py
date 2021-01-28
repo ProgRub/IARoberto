@@ -545,6 +545,13 @@ def recon():
                 if(auxList[index] == DESCONHECIDO):
                     auxList[index] = SEM_PAREDE
             tabuleiro[indexQuadrado] = "".join(auxList)
+    else:
+        for indexQuadrado in quadradosDesconhecidos:
+            auxList = list(tabuleiro[indexQuadrado])
+            for index in range(4):
+                if(auxList[index] == DESCONHECIDO):
+                    auxList[index] = PAREDE
+            tabuleiro[indexQuadrado] = "".join(auxList)
     printTabuleiro()
     return True
 
