@@ -275,7 +275,7 @@ def checkFrontWall():
         # debug_print(colorSensor.rgb)
         try:
             # detetar azul claro (parede)
-            if (colorSensor.rgb[0] < 70 and colorSensor.rgb[1] > 200 and colorSensor.rgb[2] > 200):
+            if (colorSensor.rgb[0] < 30 and colorSensor.rgb[1] > 90 and colorSensor.rgb[2] > 155):
                 parede = True
                 break
             # detetar preto (não é parede)
@@ -283,7 +283,7 @@ def checkFrontWall():
                 break
         except:
             # detetar azul claro (parede)
-            if (colorSensor.rgb[0] < 70 and colorSensor.rgb[1] > 200 and colorSensor.rgb[2] > 200):
+            if (colorSensor.rgb[0] < 30 and colorSensor.rgb[1] > 90 and colorSensor.rgb[2] > 155):
                 parede = True
                 break
             # detetar preto (não é parede)
@@ -297,7 +297,7 @@ def checkFrontWall():
 def checkSheep():
     global sonic
     # debug_print("ULTRASONIC "+str(sonic.value()//10))
-    if (sonic.value() // 10) > 15 and (sonic.value() // 10) < 40:
+    if (sonic.value() // 10) > 4 and (sonic.value() // 10) < 30:
         movement.beep()
         return True
     return False
@@ -321,42 +321,45 @@ def nextSquareToCheck():
             for index in range((indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO):
                 # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_ESTE, index+ESQUERDA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if precisaIrEsquerda:
             # debug_print(range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1))
             for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1):
                 # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_OESTE, index+DIREITA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if canGoForward(POS_NORTE, indexRobot):
             return indexRobot+CIMA
         for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+2)*TAMANHO_LINHA_TABULEIRO-1, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, -1):
             # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
             #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-            if index in quadradosDesconhecidos and canGoForward(POS_NORTE, index+BAIXO):
+            if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                 return index
     else:
         if precisaIrEsquerda:
             for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO-1, (indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO-1, -1):
                 # debug_print(str(index)+": "+str(canGoForward(POS_OESTE, index+DIREITA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_OESTE, index+DIREITA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if precisaIrDireita:
             for index in range((indexRobot//TAMANHO_LINHA_TABULEIRO)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO):
                 # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
                 #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-                if index in quadradosDesconhecidos and list(tabuleiro[index])[4] != OVELHA and (canGoForward(POS_ESTE, index+ESQUERDA) or canGoForward(POS_NORTE, index+BAIXO) or canGoForward(POS_SUL, index+CIMA)):
+                if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                     return index
         if canGoForward(POS_NORTE, indexRobot):
             return indexRobot+CIMA
         for index in range(((indexRobot//TAMANHO_LINHA_TABULEIRO)+1)*TAMANHO_LINHA_TABULEIRO, ((indexRobot//TAMANHO_LINHA_TABULEIRO)+2)*TAMANHO_LINHA_TABULEIRO):
             # debug_print(str(index)+": "+str(canGoForward(POS_ESTE, index+ESQUERDA))+" " + str(
             #     canGoForward(POS_NORTE, index+BAIXO)) + " " + str(canGoForward(POS_SUL, index+CIMA)))
-            if index in quadradosDesconhecidos and canGoForward(POS_NORTE, index+BAIXO):
+            if index in quadradosDesconhecidos and AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
                 return index
+    for index in quadradosDesconhecidos:
+        if AEstrela(indexRobot,index,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)!=[]:
+            return index
 
 
 """
@@ -415,16 +418,18 @@ def moveTo(indexDestino, paraRecon):
     orientacaoDestino = -1
     # debug_print("Index Robot:"+str(indexRobot))
     indexDestinoIntermediario = indexDestino
-    # debug_print("Index Destino:"+str(indexDestinoIntermediario))
     debug_print("Numero Ovelhas:"+str(numeroOvelhas))
     debug_print("Numero Paredes:"+str(numeroParedes))
     percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
     while indexRobot != indexDestino:
+        debug_print("Index Destino:"+str(indexDestino))
+        if indexDestino==None:
+            return True
         haParede = False
         if paraRecon:
             if indexRobot in quadradosDesconhecidos:
                 haParede = checkSides()
-            if numeroOvelhas == 2 and (numeroParedes == 6  or len(quadradosDesconhecidos) == 0):
+            if numeroOvelhas == 2 and (numeroParedes == 6 or len(quadradosDesconhecidos) == 0):
                 return True
             if haParede:
                 debug_print("RECALCULAR PERCURSO")
@@ -432,18 +437,25 @@ def moveTo(indexDestino, paraRecon):
         if not haParede:
             try:
                 indexDestinoIntermediario = percurso.pop(0)
-            except:
-                return False
-            if (indexDestinoIntermediario + CIMA) == indexRobot:
-                orientacaoDestino = POS_SUL
-            elif (indexDestinoIntermediario + DIREITA) == indexRobot:
-                orientacaoDestino = POS_OESTE
-            elif (indexDestinoIntermediario + ESQUERDA) == indexRobot:
-                orientacaoDestino = POS_ESTE
-            elif (indexDestinoIntermediario + BAIXO) == indexRobot:
-                orientacaoDestino = POS_NORTE
-            turnTowardsOrientation(orientacaoDestino)
-            goForward()
+                if (indexDestinoIntermediario + CIMA) == indexRobot:
+                    orientacaoDestino = POS_SUL
+                elif (indexDestinoIntermediario + DIREITA) == indexRobot:
+                    orientacaoDestino = POS_OESTE
+                elif (indexDestinoIntermediario + ESQUERDA) == indexRobot:
+                    orientacaoDestino = POS_ESTE
+                elif (indexDestinoIntermediario + BAIXO) == indexRobot:
+                    orientacaoDestino = POS_NORTE
+                turnTowardsOrientation(orientacaoDestino)
+                goForward()
+            except:# Exception as e:
+                # debug_print(e)
+                aux=nextSquareToCheck()
+                if aux==indexDestino:
+                    debug_print("RECONHECIMENTO FALHADO")
+                    return False
+                else:
+                    indexDestino=aux
+                    percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
 
 """
                     AUXILIARY FUNCTIONS
@@ -532,6 +544,13 @@ def recon():
                 if(auxList[index] == DESCONHECIDO):
                     auxList[index] = SEM_PAREDE
             tabuleiro[indexQuadrado] = "".join(auxList)
+    else:
+        for indexQuadrado in quadradosDesconhecidos:
+            auxList = list(tabuleiro[indexQuadrado])
+            for index in range(4):
+                if(auxList[index] == DESCONHECIDO):
+                    auxList[index] = PAREDE
+            tabuleiro[indexQuadrado] = "".join(auxList)
     printTabuleiro()
     return True
 
@@ -560,7 +579,8 @@ def AEstrela(indexStart,indexDestino,numeroMaximoMovimentos):
         # printMatrizCusto(custoMovimentoTabuleiro)
         percursoEncontrado=stepAEstrela(num, custoMovimentoTabuleiro, indexDestino)
         num += 1
-    # printMatrizCusto(custoMovimentoTabuleiro)
+    if indexDestino==20:
+        printMatrizCusto(custoMovimentoTabuleiro)
     if not percursoEncontrado:
         return []
     percurso = [indexDestino]
@@ -780,7 +800,7 @@ def relocateSheep(indicePrevio, indiceNovo,numeroOvelhas):
 def moveSheepTo(indexStart,indexDestino,numeroOvelhas):
     global tabuleiro,numeroMovimentosRobot
     copiaTabuleiro=tabuleiro.copy()
-    resultadoRaciocinio=AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas)
+    resultadoRaciocinio=AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas,numeroMovimentosRobot)
     tabuleiro=copiaTabuleiro.copy()
     if resultadoRaciocinio==[]:
         return False
@@ -900,7 +920,6 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
                     # printMatrizCusto(resultado[1])
                     # printMatrizCusto(custoMovimentoTabuleiro)
                     custoMovimentoTabuleiro=copiaCustoTabuleiro.copy()
-                    # custoMovimentoTabuleiro[resultado[1].index(-1)]=-1
                     posicoesInvalidas.append(resultado[3])
                     niveisFalhancos.append(resultado[2])
                     # debug_print("HERE2")
@@ -922,14 +941,21 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
                     if custoMovimentoTabuleiro[indexCost]!=-1:
                         custoMovimentoTabuleiro[indexCost]=0
                 # custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
-                # printMatrizCusto(custoMovimentoTabuleiro)
+                printMatrizCusto(custoMovimentoTabuleiro)
                 return [False,custoMovimentoTabuleiro,nivelRecursivo,indexPosicaoInvalida]
         else:
             tabuleiro=copiaTabuleiro.copy()
             for indexCost in range(len(custoMovimentoTabuleiro)):
                 if custoMovimentoTabuleiro[indexCost]!=-1:
                     custoMovimentoTabuleiro[indexCost]=0
-            custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
+            if(index+1)==(len(percursoOvelha)-1):
+                custoMovimentoTabuleiro[percursoOvelha[index]]=-1
+                printMatrizCusto(custoMovimentoTabuleiro)
+                return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index]]
+            else:
+                custoMovimentoTabuleiro[percursoOvelha[index+1]]=-1
+                printMatrizCusto(custoMovimentoTabuleiro)
+                return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index+1]]
             # if nivelRecursivo==3:
             #     debug_print("HERE")
             #     debug_print(percursoOvelha)
@@ -937,7 +963,7 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
             #     debug_print(percursoOvelha[index+1])
             #     printMatrizCusto(custoMovimentoTabuleiro)
             # debug_print("HERE")
-            # printMatrizCusto(custoMovimentoTabuleiro)
+            printMatrizCusto(custoMovimentoTabuleiro)
             return [False,custoMovimentoTabuleiro,nivelRecursivo,percursoOvelha[index+1]]
         if chegouSolucao:
             break
@@ -945,7 +971,7 @@ def percursoValido(percursoOvelha,custoMovimentoTabuleiro,numeroOvelhas,indexRob
 
 
 #Função que faz a busca A* do indexOvelha para indexDestino e retorna o percurso gerado. Este percurso está definido de modo a que o robot nunca "perca as ovelhas",isto é, as ovelhas não fazem movimentos aleatórios
-def AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas):
+def AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas,resetNumeroMovimentosRobot):
     global tabuleiro, indexRobot, indexOvelha1,indexOvelha2,numeroMovimentosRobot
     custoMovimentoTabuleiro = [0] * TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
     while True:
@@ -984,7 +1010,7 @@ def AEstrelaOvelhas(indexStart,indexDestino,numeroOvelhas):
         percurso.reverse()
         # percurso.pop(0)
         debug_print(percurso)
-        numeroMovimentosRobot=TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO
+        numeroMovimentosRobot=resetNumeroMovimentosRobot
         resultado=percursoValido(percurso,custoMovimentoTabuleiro,numeroOvelhas,indexRobot,0)
         if resultado[0]:
             percursoRobot=resultado[1][1:]
@@ -1149,7 +1175,7 @@ terminouRecon=recon()
 #     tabuleiro[index]="".join(aux)
 # movement.scream()
 curral=list(tabuleiro[len(tabuleiro)-1])
-if (curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE) or not True:
+if (curral[POS_ESTE]==PAREDE and curral[POS_NORTE]==PAREDE and curral[POS_SUL]==PAREDE and curral[POS_OESTE]==PAREDE) or not terminouRecon:
     movement.admitDefeat()
     pass
 else:
