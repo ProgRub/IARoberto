@@ -415,16 +415,18 @@ def moveTo(indexDestino, paraRecon):
     orientacaoDestino = -1
     # debug_print("Index Robot:"+str(indexRobot))
     indexDestinoIntermediario = indexDestino
-    # debug_print("Index Destino:"+str(indexDestinoIntermediario))
     debug_print("Numero Ovelhas:"+str(numeroOvelhas))
     debug_print("Numero Paredes:"+str(numeroParedes))
     percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
     while indexRobot != indexDestino:
+        debug_print("Index Destino:"+str(indexDestino))
+        if indexDestino==None:
+            return True
         haParede = False
         if paraRecon:
             if indexRobot in quadradosDesconhecidos:
                 haParede = checkSides()
-            if numeroOvelhas == 2 and (numeroParedes == 6  or len(quadradosDesconhecidos) == 0):
+            if numeroOvelhas == 2 and (numeroParedes == 6 or len(quadradosDesconhecidos) == 0):
                 return True
             if haParede:
                 debug_print("RECALCULAR PERCURSO")
@@ -432,18 +434,26 @@ def moveTo(indexDestino, paraRecon):
         if not haParede:
             try:
                 indexDestinoIntermediario = percurso.pop(0)
-            except:
-                return False
-            if (indexDestinoIntermediario + CIMA) == indexRobot:
-                orientacaoDestino = POS_SUL
-            elif (indexDestinoIntermediario + DIREITA) == indexRobot:
-                orientacaoDestino = POS_OESTE
-            elif (indexDestinoIntermediario + ESQUERDA) == indexRobot:
-                orientacaoDestino = POS_ESTE
-            elif (indexDestinoIntermediario + BAIXO) == indexRobot:
-                orientacaoDestino = POS_NORTE
-            turnTowardsOrientation(orientacaoDestino)
-            goForward()
+                if (indexDestinoIntermediario + CIMA) == indexRobot:
+                    orientacaoDestino = POS_SUL
+                elif (indexDestinoIntermediario + DIREITA) == indexRobot:
+                    orientacaoDestino = POS_OESTE
+                elif (indexDestinoIntermediario + ESQUERDA) == indexRobot:
+                    orientacaoDestino = POS_ESTE
+                elif (indexDestinoIntermediario + BAIXO) == indexRobot:
+                    orientacaoDestino = POS_NORTE
+                turnTowardsOrientation(orientacaoDestino)
+                goForward()
+            except:# Exception as e:
+                # debug_print(e)
+                aux=nextSquareToCheck()
+                if aux==indexDestino:
+                    debug_print("RECONHECIMENTO FALHADO")
+                    return False
+                else:
+                    indexDestino=aux
+                    percurso = AEstrela(indexRobot,indexDestino,TAMANHO_LINHA_TABULEIRO*TAMANHO_LINHA_TABULEIRO)
+
 
 """
                     AUXILIARY FUNCTIONS
